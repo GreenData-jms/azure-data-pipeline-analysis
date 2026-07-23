@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "title": "ERC EDW Azure Ingress — key figures",
+    "purpose": "Machine-readable single source of truth for numbers. Feed alongside the content corpus so generated artifacts cite consistent figures.",
+    "cost_basis": "Live Azure Retail Prices, region West US, PAYG Consumption, pulled 2026-07-22",
+    "region": "westus",
+    "currency": "USD",
+    "caveat": "Planning estimates on documented volume assumptions; not a quote. Build/ops use a $150/hr blended labor rate. Reservations (1-3yr) cut compute 30-41% and are not in the PAYG baseline.",
+    "as_of": "2026-07-22"
+  },
+  "unit_prices": {
+    "adf_orchestration_per_1k_runs": 1.00,
+    "adf_self_hosted_orchestration_per_1k_runs": 1.50,
+    "adf_cloud_copy_per_diu_hour": 0.25,
+    "adf_self_hosted_copy_per_hour": 0.10,
+    "adf_mapping_dataflow_general_purpose_per_vcore_hour": 0.26975,
+    "adf_mapping_dataflow_memory_optimized_per_vcore_hour": 0.3425,
+    "databricks_jobs_standard_dbu_hour": 0.15,
+    "databricks_jobs_premium_photon_dbu_hour": 0.30,
+    "databricks_dlt_core_dbu_hour": 0.30,
+    "databricks_all_purpose_premium_dbu_hour": 0.55,
+    "fabric_capacity_per_cu_hour": 0.20,
+    "fabric_reserved_1yr_factor": 0.59,
+    "fabric_f8_payg_month": 1168,
+    "fabric_f16_payg_month": 2336,
+    "fabric_f32_payg_month": 4672,
+    "onelake_hot_storage_gb_month": 0.026,
+    "adls_gen2_hot_lrs_gb_month": 0.021,
+    "azure_sql_gp_gen5_2vcore_hour": 0.334878,
+    "azure_sql_gp_gen5_4vcore_hour": 0.669756,
+    "azure_sql_gp_gen5_8vcore_hour": 1.339512,
+    "azure_sql_storage_gb_month": 0.115,
+    "vm_d4s_v5_linux_hour": 0.224,
+    "vm_d4s_v5_windows_hour": 0.408,
+    "vm_d2s_v5_linux_hour": 0.112,
+    "vm_d4s_v5_spot_hour": 0.075,
+    "event_hubs_standard_tu_hour": 0.03,
+    "event_hubs_ingress_per_million_events": 0.028,
+    "functions_premium_vcpu_hour": 0.17,
+    "functions_premium_memory_gib_hour": 0.0122,
+    "functions_consumption_per_million_exec": 0.20,
+    "functions_consumption_gb_second": 0.000016,
+    "container_apps_active_vcpu_second": 0.000024,
+    "container_apps_active_memory_gib_second": 0.000003,
+    "internet_egress_tier1_gb": 0.08
+  },
+  "volume_assumptions": {
+    "sources": 30,
+    "orchestration_activity_runs_month": 3000,
+    "steady_ingest_gb_month": 75,
+    "raw_lake_resident_gb": 500,
+    "relational_staging_gb": 50,
+    "telematics_events_month": 30000000,
+    "transform_cluster_hours_month": 120,
+    "historical_backfill_tb_onetime": 1.5,
+    "blended_labor_rate_hour": 150,
+    "build_hours": {"ADF": 375, "Databricks": 550, "Fabric": 425, "RollYourOwn": 900},
+    "ops_hours_month": {"ADF": 8, "Databricks": 16, "Fabric": 8, "RollYourOwn": 40}
+  },
+  "variants": {
+    "A_ADF": {
+      "label": "ADF-centric PaaS",
+      "commercial_model": "pay-per-use",
+      "run_month": 1654,
+      "run_month_no_cosmos": 1504,
+      "ops_labor_month": 1200,
+      "run_plus_ops_month": 2854,
+      "build_onetime": 56250,
+      "build_hours": 375,
+      "tco_3yr_run_build_only": 115793,
+      "tco_3yr_with_ops": 158993
+    },
+    "B_Databricks": {
+      "label": "Databricks lakehouse",
+      "commercial_model": "DBU consumption",
+      "run_month": 1728,
+      "ops_labor_month": 2400,
+      "run_plus_ops_month": 4128,
+      "build_onetime": 82500,
+      "build_hours": 550,
+      "tco_3yr_run_build_only": 144702,
+      "tco_3yr_with_ops": 231102
+    },
+    "C_Fabric": {
+      "label": "Microsoft Fabric",
+      "commercial_model": "fixed capacity (F-SKU)",
+      "run_month_f16_payg": 2670,
+      "run_month_f8_reserved": 1024,
+      "ops_labor_month": 1200,
+      "run_plus_ops_month_f16": 3870,
+      "build_onetime": 63750,
+      "build_hours": 425,
+      "tco_3yr_run_build_only_f16": 159885,
+      "tco_3yr_run_build_only_f8_reserved": 100597,
+      "tco_3yr_with_ops_f16": 203085
+    },
+    "D_RollYourOwn": {
+      "label": "Roll-your-own (Durable Functions + handlers + Container Apps)",
+      "commercial_model": "serverless primitives",
+      "run_month": 1032,
+      "ops_labor_month": 6000,
+      "run_plus_ops_month": 7032,
+      "build_onetime": 135000,
+      "build_hours": 900,
+      "tco_3yr_with_ops": 388162
+    }
+  },
+  "headline_comparisons": {
+    "cheapest_to_run": "D_RollYourOwn ($1,032/mo)",
+    "lowest_total_tco_3yr": "A_ADF ($158,993 with ops) / C_Fabric F8-reserved ($100,597 run+build only if it fits F8)",
+    "highest_total_tco_3yr": "D_RollYourOwn ($388,162, ~2.4x ADF)",
+    "diy_run_saving_vs_adf_year": 7460,
+    "diy_ops_penalty_vs_adf_year": 57600,
+    "diy_extra_build_vs_adf": 78750,
+    "managed_run_cost_band_month": "1500-2700"
+  },
+  "sensitivity_run_month": {
+    "0.5x": {"A": 1488, "B": 1583, "C_F8": 1496},
+    "1.0x": {"A": 1654, "B": 1728, "C_F16": 2670},
+    "2.0x": {"A": 1989, "B": 2021, "C_F32": 5023}
+  }
+}
