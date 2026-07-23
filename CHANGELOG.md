@@ -2,27 +2,27 @@
 
 All notable changes to the Azure Data Pipeline Analysis project.
 
+## [alternates-v1] — 2026-07
+- Added `alternates/` folder extending the analysis from 4 Azure options to **all 7 approaches**.
+- **Alternate 1 — Oracle OCI-native** (approach 5): API inbound to OCI, in-database ETL via OIC + OCI API Gateway + Oracle Data Transforms/PL-SQL; zero cross-cloud egress; License-Included vs BYOL.
+- **Alternate 2 — On-premise** (approaches 6 & 7): full owned stack with SQL Server or Oracle DB storage; complete componentry; license cost accounted **distinctly from hardware/infrastructure**.
+- Added `seven_approach_cost_model.py` + `seven-approach-figures.json`: **license / infrastructure / labor** as distinct streams (capex + monthly) across all 7 approaches, with 3-yr TCO.
+- Added `content-corpus-addendum.md` (feed-ready for Claude design) and new analysis pillars 7–10.
+- Key finding: ADF lowest TCO ($159k); on-premise ~$506k (hardware+labor driven); Oracle EE license alone (~$315k/3yr) exceeds the entire ADF TCO. License is explicit off-cloud, bundled in hyperscaler rates.
+
 ## [corpus-v1] — 2026-07
-- Added `corpus/content-corpus.md`: feed-ready content source of truth (context, master fact base, six analysis pillars, TL;DR blocks, executive summary, 12-slide presentation outline, audience framings, soundbites, glossary).
-- Added `corpus/figures.json`: machine-readable single source of truth for all numbers.
-- Added `DELIVERABLES.md`: analysis-deliverable definitions for Claude design.
+- Added `corpus/content-corpus.md` (feed-ready content source of truth) and `corpus/figures.json` (machine-readable numbers).
+- Added `DELIVERABLES.md` (analysis-deliverable definitions for Claude design).
 - Initialized GitHub repo `GreenData-jms/azure-data-pipeline-analysis` and synced all artifacts.
 
 ## [v0.3] — 2026-07
-- Added **Variant D — roll-your-own** (Durable Functions + per-source handlers + Container Apps Jobs).
-- Added the **ongoing-ops-labor** dimension to the cost model (hrs/month per option).
-- Verdict on "is ADF the optimal-priced choice?": ADF optimal on **total** cost, not on run cost. DIY is cheapest to run (~$1,032/mo) but highest 3-yr TCO (~$388k, ~2.4× ADF).
-- Live-priced Functions (Consumption + Premium) and Container Apps meters.
+- Added Variant D — roll-your-own (Durable Functions + handlers + Container Apps Jobs) + ongoing-ops-labor dimension.
+- Verdict: ADF optimal on total cost, not run cost. DIY cheapest to run (~$1,032/mo) but highest 3-yr TCO among the Azure four (~$388k).
 
 ## [v0.2] — 2026-07
-- Reframed as **three peer pipeline platforms** (ADF vs Databricks vs Fabric), each equally capable, replacing the v0.1 "ADF + supporting techniques" framing.
-- Added the **live-priced bottoms-up cost model** (`erc_azure_cost_model.py`) using Azure Retail Prices (West US, PAYG, 2026-07-22) on documented volume assumptions.
-- Added capability-parity matrix, per-option cost buildups, 3-yr TCO, and 0.5×/1×/2× sensitivity.
-- Key finding: at this scale, managed run costs converge (~$1.5–2.7k/mo); fit and effort decide.
+- Reframed as three peer pipeline platforms (ADF vs Databricks vs Fabric) + live-priced bottoms-up cost model (Azure Retail, West US, 2026-07-22).
+- Capability-parity matrix, per-option cost buildups, 3-yr TCO, sensitivity. Finding: managed run costs converge; fit and effort decide.
 
 ## [v0.1] — 2026-07
 - Initial proposal: Azure ingest→cleanse→ETL→stage tier in front of the Oracle OCI EDW.
-- Three-lane ingress model (External API / Internal SSOR / Other-Dept SSOR) mapped to ~30 sources.
-- Data-quality/quarantine framework aligned to ERC Naming Standards v3.0.
-- Three OCI landing patterns (direct JDBC · Object Storage + `DBMS_CLOUD` · GoldenGate/Data Pump).
-- Source-to-technique mapping appendix.
+- Three-lane ingress (External API / Internal SSOR / Other-Dept SSOR); DQ/quarantine framework (ERC v3.0); three OCI landing patterns; source-to-technique mapping.
