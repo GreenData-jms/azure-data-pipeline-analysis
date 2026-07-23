@@ -1,27 +1,30 @@
 # Alternates — full 7-approach comparison with License vs Infrastructure split
 
-This folder extends the core Azure analysis (`../proposals/`) with two additional architectural strategies and re-costs **all seven approaches** with **license cost and infrastructure cost as distinct line items** (plus labor), per requirement.
+This folder holds the three parallel strategy write-ups and re-costs **all seven approaches** with **license cost and infrastructure cost as distinct line items** (plus labor), per requirement.
 
-**Contents**
-- `alternate-1-oci-native.md` — Oracle OCI-native ingress + in-database ETL (approach 5)
-- `alternate-2-on-premise.md` — on-premise stack with SQL Server or Oracle DB storage (approaches 6 & 7)
+**Three parallel strategies**
+- **Alternate 0 — Azure** (`alternate-0-azure.md`): a dedicated Azure tier in front of the EDW; the in-Azure family of approaches 1–4 (ADF, Databricks, Fabric, Roll-your-own). Consolidates `../proposals/`.
+- **Alternate 1 — Oracle OCI-native** (`alternate-1-oci-native.md`): API inbound to OCI, in-database ETL (approach 5).
+- **Alternate 2 — On-premise** (`alternate-2-on-premise.md`): owned stack with SQL Server or Oracle DB storage (approaches 6 & 7).
+
+**Supporting files**
 - `seven_approach_cost_model.py` — reproducible model; license/infra/labor, capex + monthly, 3-yr TCO
 - `seven-approach-figures.json` — machine-readable figures for Claude design
-- `content-corpus-addendum.md` — feed-ready content for the two new approaches + the 7-way view
+- `content-corpus-addendum.md` — feed-ready content for the alternates + the 7-way view
 
 ---
 
-## The seven approaches
+## The seven approaches (grouped by alternate)
 
-| # | Approach | Family | Pipeline / engine | Storage container |
-|---|---|---|---|---|
-| 1 | **ADF** | Azure managed | Azure Data Factory | Azure SQL |
-| 2 | **Databricks** | Azure managed | Databricks Workflows/Spark | ADLS Delta + SQL |
-| 3 | **Fabric** | Azure managed | Fabric Data Factory | OneLake / Warehouse |
-| 4 | **Roll-your-own** | Azure DIY | Durable Functions + Container Apps | Azure SQL |
-| 5 | **Oracle OCI-native** | OCI | OIC + API Gateway + Data Transforms | Autonomous DW (in-DB) |
-| 6 | **On-prem Oracle DB** | On-premise | PL/SQL (or ODI) | Oracle SE2/EE |
-| 7 | **On-prem SQL Server** | On-premise | SSIS | SQL Server Std/Ent |
+| Alt | # | Approach | Family | Pipeline / engine | Storage container |
+|---|---|---|---|---|---|
+| **0** | 1 | **ADF** | Azure managed | Azure Data Factory | Azure SQL |
+| **0** | 2 | **Databricks** | Azure managed | Databricks Workflows/Spark | ADLS Delta + SQL |
+| **0** | 3 | **Fabric** | Azure managed | Fabric Data Factory | OneLake / Warehouse |
+| **0** | 4 | **Roll-your-own** | Azure DIY | Durable Functions + Container Apps | Azure SQL |
+| **1** | 5 | **Oracle OCI-native** | OCI | OIC + API Gateway + Data Transforms | Autonomous DW (in-DB) |
+| **2** | 6 | **On-prem Oracle DB** | On-premise | PL/SQL (or ODI) | Oracle SE2/EE |
+| **2** | 7 | **On-prem SQL Server** | On-premise | SSIS | SQL Server Std/Ent |
 
 ---
 
@@ -69,13 +72,13 @@ This folder extends the core Azure analysis (`../proposals/`) with two additiona
 
 ---
 
-## Ranking & recommendation (unchanged, now with 6 more analyses behind it)
+## Ranking & recommendation
 
 **3-yr TCO:** ADF $159k < Fabric $203k < Databricks $231k < OCI-native $256k < Roll-your-own $388k < On-prem SE2 $506k ≈ On-prem SQL $506k (< Oracle EE $763k).
 
-**Recommendation stands: build on ADF.** It is the lowest total cost *and* the lowest labor-risk. The two new alternates sharpen, rather than change, that conclusion:
-- **OCI-native** is the option to take seriously **if the program prioritizes single-vendor/single-cloud coherence and data gravity** — especially under BYOL. It is the strongest non-Azure choice.
-- **On-premise** is justified **only by a hard data-residency/sovereignty mandate or a large existing on-prem investment to amortize** — it is ~3× the cost of ADF and concentrates hardware + operational risk on the team.
+**Recommendation stands: build on ADF** (alternate 0) — the lowest total cost *and* the lowest labor-risk. The two off-Azure alternates sharpen, rather than change, that conclusion:
+- **OCI-native (alt 1)** is the option to take seriously **if the program prioritizes single-vendor/single-cloud coherence and data gravity** — especially under BYOL. It is the strongest non-Azure choice.
+- **On-premise (alt 2)** is justified **only by a hard data-residency/sovereignty mandate or a large existing on-prem investment to amortize** — it is ~3× the cost of ADF and concentrates hardware + operational risk on the team.
 - The **license/infrastructure split** is now a permanent lens in the model: change a license tier (SE2↔EE, Std↔Ent, Lic-Incl↔BYOL) or a hardware/facilities assumption and re-run to see each lever move independently.
 
 *Reproduce or reprice: `python3 seven_approach_cost_model.py`. All figures are planning estimates; enterprise license discounts (50–80% off list) and reservations are not applied — model both.*
