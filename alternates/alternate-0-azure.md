@@ -56,7 +56,7 @@ Key Vault (secrets), Managed Identity, private endpoints/VNet, Purview/Fabric ca
 
 **2 — Databricks (scale/streaming).** ADF (batch) + Event Hubs (telematics streaming) + Auto Loader; PySpark/DLT cleanse; ADLS Delta mirror + thin SQL. Best transform power, cleanest SCD2, real streaming lane, ML runway. Limit: highest run cost + biggest Spark skills ask.
 
-**3 — Fabric (Power BI-native).** Fabric Data Factory + Dataflows Gen2 (Power Query) + Notebooks; OneLake + Warehouse. One SaaS platform, predictable F-SKU capacity, low-code fit for a Power BI shop. Limit: newest; Oracle sink maturity to validate; capacity sizing needs tuning (step-function cost).
+**3 — Fabric (unified SaaS).** Fabric Data Factory + Dataflows Gen2 (Power Query) + Notebooks; OneLake + Warehouse. One SaaS platform, predictable F-SKU capacity, low-code fit. Judge it on cost + Oracle-sink maturity + capacity — *not* on Power BI nativeness: per the scope invariant, BI consumes the Oracle EDW downstream of aiWorks, identical across approaches. Limit: newest; Oracle sink maturity to validate; capacity sizing needs tuning (step-function cost).
 
 **4 — Roll-your-own (DIY).** Durable Functions orchestrator + per-source Function handlers + Container Apps Jobs for cleanse/ETL; Azure SQL + ADLS. Cheapest to *run* (serverless strips managed markup) but you become the pipeline vendor. Limit: highest build + maintenance labor; key-person risk. (Full verdict in `../proposals/proposal-v0.3.md`.)
 
@@ -73,13 +73,15 @@ Key Vault (secrets), Managed Identity, private endpoints/VNet, Purview/Fabric ca
 | 3. Fabric | $84,096 | $12,060 | $106,950 | ~$2,670 (F16) / ~$1,024 (F8 res.) | **$203,106** | 41% |
 | 4. Roll-your-own | $7,128 | $30,024 | $351,000 | ~$1,032 | **$388,152** | 2% |
 
-**What the split shows within Azure:** **Fabric is ~41% license** (a pure capacity subscription — Microsoft runs the infra); **Databricks DBU is a software license on rented VM infrastructure**; **roll-your-own is only 2% license** because it replaces software with a 90%-labor bill. ADF sits in the middle and carries the lowest total. Monthly run costs converge in a narrow band (~$1,000–$2,700/mo) — at this scale, **build effort and operating fit decide, not run cost.**
+**What the split shows within Azure:** **Fabric is ~41% license** (a pure capacity subscription — Microsoft runs the infra); **Databricks DBU is a software license on rented VM infrastructure**; **roll-your-own is only 2% license** because it replaces software with a 90%-labor bill. The three managed 3-yr totals ($159k/$203k/$231k) are a **band inside the labor-estimate noise** (labor is 63–90% of each) — ADF at the low edge, but the order within the trio is not a measurement; only the gap to roll-your-own ($388k) is decisive. Monthly run costs converge in a narrow band (~$1,000–$2,700/mo) — at this scale, **build effort and operating fit decide, not run cost.**
+
+**Two contingencies sit outside these figures (both favor OCI-native, i.e. against every Azure approach):** (1) **GoldenGate** — if the telematics lane needs low-latency CDC (P3), add ~$8k (OCI-managed BYOL) / ~$35k (OCI-managed Lic-Incl) / ~$58k (perpetual) over 3yr; it applies to all four Azure approaches and is $0 for OCI-native. The default P2 (Parquet + `DBMS_CLOUD`) needs none, so it's a PoC exit question. (2) **Cross-cloud egress** (Azure→OCI) — immaterial in dollars (~$365/3yr) but the one line OCI-native zeroes. **Ops decomposition:** a shared connector-drift slice (~10 h/mo across ~30 drifting sources) is roughly constant across all four; ADF's advantage is *near-zero engine upkeep*, not lowest total ops.
 
 ---
 
 ## 5. Internal recommendation (within Azure)
 
-Build on **ADF** as the delivery baseline — lowest total cost, lowest ops, most mature Oracle sink, gentlest cost elasticity if volumes grow. Design the landing contract and lake so heavy/streaming workstreams (telematics, high-volume ops) can **graduate to Databricks** patterns incrementally (ADF and Databricks share ADLS Gen2 and the contract). Keep **Fabric** as a strategic option given ERC's Power BI orientation, validated by a scoped PoC (its F8-reserved total is competitive *if* the workload tunes to fit). Treat **roll-your-own** as the cautionary comparator: cheapest to run, most expensive to own — but its cheap serverless primitives (Functions, Container Apps Jobs) can be dropped *under* ADF orchestration for the few steps a Data Flow prices expensively.
+Build on **ADF** as the delivery baseline — at the low edge of the managed band, lightest build, near-zero *engine* upkeep, most mature Oracle sink, gentlest cost elasticity if volumes grow. Design the landing contract and lake so heavy/streaming workstreams (telematics, high-volume ops) can **graduate to Databricks** patterns incrementally (ADF and Databricks share ADLS Gen2 and the contract). Keep **Fabric** as a **cost-only** option — its F8-reserved total is competitive *if* the workload tunes to fit — validated by a scoped PoC (not chosen for Power BI fit; per the scope invariant BI-platform nativeness is not a selection factor). Treat **roll-your-own** as the cautionary comparator: cheapest to run, most expensive to own — but its cheap serverless primitives (Functions, Container Apps Jobs) can be dropped *under* ADF orchestration for the few steps a Data Flow prices expensively.
 
 **Next step:** a 2–3 week PoC landing two contrasting feeds end-to-end into OCI staging — GeoTab telematics (Lane 1) + FastTrak/CGI Advantage (Lane 3) — with the `QUAR_`/manifest hand-off to Agiline's aiWorks load (which runs Billow's PL/SQL).
 
@@ -87,7 +89,7 @@ Build on **ADF** as the delivery baseline — lowest total cost, lowest ops, mos
 
 ## 6. Why Azure (vs alternates 1 & 2)
 
-**Strengths.** Best-of-breed flexibility for ~30 heterogeneous, drifting external sources; mature managed services with low ops; a clear reversible path across four engines; strong Power BI story (Fabric); lowest overall TCO in the whole 7-approach comparison (ADF $159k). Decouples ingestion from the EDW so the warehouse isn't loaded by ETL.
+**Strengths.** Best-of-breed flexibility for ~30 heterogeneous, drifting external sources; mature managed services with low ops; a clear reversible path across four engines; ADF sits at the low edge of the managed cost band ($159k) in the whole 7-approach comparison. Decouples ingestion from the EDW so the warehouse isn't loaded by ETL — the **workload-isolation** advantage over OCI-native (which would run ETL on the same ADW that serves reporting).
 
 **Trade-offs vs the others.** Introduces a **second cloud** and therefore a **cross-cloud egress + landing hop** that alternate 1 (OCI-native) eliminates by keeping ingestion where the EDW already lives. Less single-vendor coherence than OCI-native; more managed-service dependency than on-premise. If single-cloud/data-gravity or data-residency mandates dominate, alternates 1 or 2 respectively become the better fit — otherwise Azure (ADF) is the recommended choice.
 

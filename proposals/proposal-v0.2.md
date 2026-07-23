@@ -22,7 +22,7 @@ At the documented mid-size Caltrans volume, steady-state monthly run costs land 
 | B — Databricks | ~$1,730/mo | lower w/ spot + DBCU commit | ~550 hrs / ~$83k | ~$145k |
 | C — Fabric | ~$2,670/mo (F16 PAYG) | ~$1,024/mo (F8 reserved) | ~425 hrs / ~$64k | ~$100k–160k |
 
-The decision is not "which is cheapest to run" — they're close. It's build effort and Spark skill (ADF lowest, Databricks highest), Fabric's flat capacity + Power BI fit, and future scale.
+The decision is not "which is cheapest to run" — they're close (a band, not a ranking). It's build effort and Spark skill (ADF lowest, Databricks highest), Fabric's flat capacity, and future scale. *Not* Power BI fit: per the scope invariant, every approach lands in Oracle staging and Power BI consumes the Oracle EDW downstream of aiWorks, identical across approaches — so BI-platform nativeness is not a selection factor.
 
 ---
 
@@ -46,7 +46,7 @@ Azure is an ingest → cleanse → ETL → stage tier in front of the Oracle OCI
 | Land to OCI | ADF Oracle sink (P1/P2) | Spark JDBC / Parquet (P1/P2/P3) | Fabric Copy / Parquet (P1/P2) |
 | Commercial model | Pay-per-use | DBU consumption | Fixed capacity (F-SKU) |
 
-**3.1 Why these three (price-vs-objective):** ADF = floor on build/ops + mature Oracle sink (low-effort/low-cost anchor); Databricks = max capability (SCD2, streaming, ML runway); Fabric = best ecosystem fit for a Power BI-first shop + predictable capacity bill. Rejected: Synapse (same engine as ADF), Airflow+dbt (OSS labor cost), Matillion/Fivetran (license + less control). Note: Fabric's pipeline engine descends from ADF; it earns peer status on commercial model, OneLake, and Power BI nativeness.
+**3.1 Why these three (price-vs-objective):** ADF = floor on build/ops + mature Oracle sink (low-effort/low-cost anchor); Databricks = max capability (SCD2, streaming, ML runway); Fabric = single capacity bill + low-code fit (judged on cost + Oracle-sink maturity + capacity, **not** Power BI nativeness — see scope invariant). Rejected: Synapse (same engine as ADF), Airflow+dbt (OSS labor cost), Matillion/Fivetran (license + less control). Note: Fabric's pipeline engine descends from ADF; it earns peer status on commercial model and OneLake.
 
 ---
 
@@ -63,7 +63,7 @@ Azure is an ingest → cleanse → ETL → stage tier in front of the Oracle OCI
 | SCD2/complex | good | best | good |
 | Streaming | optional | native | Eventstream |
 | Low-code/analyst | ◐ | ○ | ✓ Power Query |
-| Power BI fit | ◐ | ◐ | ✓ native |
+| Power BI fit (NOT a selection factor — BI is downstream on Oracle) | ◐ | ◐ | ✓ native |
 
 DQ framework identical (validate→dedup→XREF→rules→`QUAR_`→SCD2 prep→PII→ERC v3.0); only the engine differs.
 
