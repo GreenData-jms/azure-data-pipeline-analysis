@@ -22,6 +22,6 @@
 
 ## Decision needed / next step
 
-Approve a **2–3 week proof of concept** landing two contrasting feeds end-to-end into the OCI Bronze zone — GeoTab telematics (Lane 1) and FastTrak or CGI Advantage (Lane 3) — with the QUAR_/manifest hand-off to Billow's aiWorks (Agiline) load, run in parallel through a Fabric F-SKU trial. This converts the estimates in this memo into committed numbers and validates the landing contract with Billow before the full build.
+Approve a **2–3 week proof of concept** landing two contrasting feeds end-to-end into the OCI staging zone — GeoTab telematics (Lane 1) and FastTrak or CGI Advantage (Lane 3) — with the QUAR_/manifest hand-off to Agiline's aiWorks load (which runs Billow's PL/SQL), run in parallel through a Fabric F-SKU trial. This converts the estimates in this memo into committed numbers and validates the landing contract with Billow before the full build.
 
 *All figures are planning estimates (live Azure retail + 2026 license list prices); enterprise discounts and reservations not applied. Full analysis: `GreenData-jms/azure-data-pipeline-analysis`.*
