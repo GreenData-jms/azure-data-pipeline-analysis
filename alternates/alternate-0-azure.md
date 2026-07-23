@@ -8,7 +8,7 @@
 
 ## 1. The idea
 
-Stand up a **dedicated Azure tier that sits in front of the Oracle OCI EDW**: it ingests ~30 sources across three lanes, cleans them, ETLs them into the structures the ERC logical model expects, and lands the finished `*_RAW` + `{TYPE}_STG` + `QUAR_` tables into the OCI Bronze zone — where Billow/aiWorks promotes them to Silver/Gold. Azure is an ingest/quality/staging engine, **not** a competing warehouse.
+Stand up a **dedicated Azure tier that sits in front of the Oracle OCI EDW**: it ingests ~30 sources across three lanes, cleans them, ETLs them into the structures the ERC logical model expects, and lands the finished `*_RAW` + `{TYPE}_STG` + `QUAR_` tables into the OCI Bronze zone — where Billow (using Agiline's aiWorks platform + Billow-provided PL/SQL) promotes them to Silver/Gold. Azure is an ingest/quality/staging engine, **not** a competing warehouse.
 
 Unlike alternates 1 and 2, this is a *family* of four interchangeable build options that share one architecture, one data-quality framework, and one landing contract, differing only in the pipeline engine and storage substrate:
 
@@ -81,7 +81,7 @@ Key Vault (secrets), Managed Identity, private endpoints/VNet, Purview/Fabric ca
 
 Build on **ADF** as the delivery baseline — lowest total cost, lowest ops, most mature Oracle sink, gentlest cost elasticity if volumes grow. Design the landing contract and lake so heavy/streaming workstreams (telematics, high-volume ops) can **graduate to Databricks** patterns incrementally (ADF and Databricks share ADLS Gen2 and the contract). Keep **Fabric** as a strategic option given ERC's Power BI orientation, validated by a scoped PoC (its F8-reserved total is competitive *if* the workload tunes to fit). Treat **roll-your-own** as the cautionary comparator: cheapest to run, most expensive to own — but its cheap serverless primitives (Functions, Container Apps Jobs) can be dropped *under* ADF orchestration for the few steps a Data Flow prices expensively.
 
-**Next step:** a 2–3 week PoC landing two contrasting feeds end-to-end into OCI Bronze — GeoTab telematics (Lane 1) + FastTrak/CGI Advantage (Lane 3) — with the `QUAR_`/manifest handoff to aiWorks.
+**Next step:** a 2–3 week PoC landing two contrasting feeds end-to-end into OCI Bronze — GeoTab telematics (Lane 1) + FastTrak/CGI Advantage (Lane 3) — with the `QUAR_`/manifest hand-off to Billow's aiWorks (Agiline) load.
 
 ---
 
