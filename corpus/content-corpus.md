@@ -21,6 +21,10 @@ This file is a **content source of truth**, not a finished artifact. It is organ
 
 **Consistency rules for any generated artifact:** cost figures are *planning estimates* (state it once); Azure is a *staging tier in front of* the Oracle EDW (never a replacement); the four options are *peers* on capability and differ on cost/effort/fit; the DIY verdict is *cheapest to run, most expensive to own*. **Role chain (keep exact): Billow lands staging → Agiline's aiWorks loads the EDW running Billow's PL/SQL → Billow consumes into Power BI. aiWorks is Agiline's product; never say Billow completes the EDW load.**
 
+**Scope invariant (keep exact):** every approach lands in the Oracle EDW **staging** zone; Power BI consumption is **downstream and invariant** (aiWorks loads the Oracle EDW from staging; Billow consumes the Oracle EDW into Power BI). So **BI-platform "nativeness" (Fabric/OneLake/Power BI) is NOT a selection factor** — never present it as a reason to prefer or rank an approach; judge Fabric on cost + Oracle-sink maturity + capacity only.
+
+**Cost-framing rules (keep exact):** (a) present the three managed options as a **BAND ~$159k–$231k** (ADF at the low edge), *not* an ordinal ranking — the order within the trio is inside the labor-estimate noise; only cross-family gaps are decisive. (b) Compare **OCI-native at BYOL ~$233k** (owned Oracle licenses), not Lic-Incl $256k; prefer Azure over it on **workload isolation + connector breadth**, not TCO. (c) Two contingencies sit **outside** the base TCO and both favor OCI-native: conditional **GoldenGate** if telematics needs CDC (~$8k–58k/3yr; every Azure approach; $0 for OCI-native) and cross-cloud **egress** (immaterial dollars; $0 for OCI-native).
+
 ---
 
 ## 1. One-paragraph project context
@@ -34,7 +38,7 @@ The ERC Enterprise Data Warehouse is an Oracle Autonomous Data Warehouse on OCI,
 - **Azure is an ingestion, quality, and staging tier that sits *in front of* the Oracle EDW — not a competing warehouse.** Its job (Billow's, via this tier) is to land clean, conformed tables in the OCI staging zone — from which Agiline's aiWorks loads them into the EDW using Billow's PL/SQL, before Billow consumes the EDW into Power BI.
 - **One contract line divides the world:** everything from source to the OCI Bronze landing is Azure's responsibility (this proposal); after that, Agiline's aiWorks loads staging into the EDW (Silver/Gold) running Billow's PL/SQL, and Billow consumes the EDW into Power BI. Because the contract is identical across every option, the platform choice is **reversible**.
 - **The board asked two governing questions** we treat as first-class: *"Clarity of Reasoning"* (every choice justified) and *"Evaluate the cost profile of each approach — 3 to 5 best choices we can all look at."* This corpus answers both.
-- **The decision is not "which is cheapest to run."** At this scale the managed options run within a narrow band; what separates them is build effort, operating model, ecosystem fit, and — for roll-your-own — the labor you permanently absorb.
+- **The decision is not "which is cheapest to run."** At this scale the managed options run within a narrow band; what separates them is build effort, operating model, cost elasticity, and — for roll-your-own — the labor you permanently absorb. (Note: BI-platform fit is *not* a separator — every approach lands in Oracle staging and Power BI consumes the Oracle EDW downstream, invariant across approaches.)
 
 ---
 
@@ -70,21 +74,21 @@ Azure output slots into the Oracle **Bronze** layer: `*_RAW` (immutable, append-
 
 - **P1 — Direct JDBC/Oracle sink:** write rows straight into `ERC_*_BRZ`. Best for small–medium batch; native in ADF.
 - **P2 — Object Storage + external tables:** write Parquet/CSV to OCI Object Storage; Oracle `DBMS_CLOUD`/external tables ingest. Best for bulk, replayability, decoupled cadence. *Recommended default for most feeds.*
-- **P3 — GoldenGate / Data Pump CDC:** stream changes. Reserve for telematics-class volume.
+- **P3 — GoldenGate / Data Pump CDC:** stream changes. Reserve for telematics-class volume. **Cost caveat:** GoldenGate is separately licensed and is *not* in the base TCO — if the telematics lane truly needs low-latency CDC, add ~$8k (OCI-managed BYOL) / ~$35k (OCI-managed Lic-Incl) / ~$58k (perpetual) over 3yr. It applies to every Azure approach equally and is **$0** for OCI-native (in-database CDC). The default for most feeds is P2, which needs no GoldenGate. "Does telematics require P3?" is a PoC exit question.
 - **Connectivity:** prefer the Azure–OCI Interconnect / Oracle Database@Azure for private, egress-optimized transfer; else private endpoint + wallet over TLS.
 
 ### 4.4 The four variants (capsule specs)
 
 | | **A — ADF** | **B — Databricks** | **C — Fabric** | **D — Roll-your-own** |
 |---|---|---|---|---|
-| One-liner | Managed PaaS pipeline, lowest ops | Medallion mirrored in Azure with Spark | Unified SaaS, Power BI-native | Build ADF's job from raw primitives |
+| One-liner | Managed PaaS pipeline, lowest ops | Medallion mirrored in Azure with Spark | Unified SaaS, single capacity bill | Build ADF's job from raw primitives |
 | Pipeline engine | Azure Data Factory | Databricks Workflows (+ADF copy) | Fabric Data Factory | Azure Durable Functions |
 | Technique #2 | Azure Functions | Event Hubs | Dataflows Gen2 | Per-source Function handlers |
 | Technique #3 | Logic Apps | Auto Loader / notebooks | Fabric Notebooks | Container Apps Jobs |
 | Cleanse/ETL engine | Mapping Data Flows + SQL | PySpark / Delta Live Tables | Power Query + Notebooks | Python in Container Apps |
 | Conformed store | Azure SQL (+Cosmos for JSON) | ADLS Gen2 Delta (+thin SQL) | Fabric Warehouse/Lakehouse | Azure SQL + ADLS |
 | Commercial model | Pay-per-use | DBU consumption | Fixed capacity (F-SKU) | Serverless primitives |
-| Strategic role | **Baseline** | Graduation target (heavy/streaming) | PoC option (ecosystem fit) | Cautionary comparator |
+| Strategic role | **Baseline** | Graduation target (heavy/streaming) | PoC option (cost-only; F8 if tuned) | Cautionary comparator |
 
 ### 4.5 The cost numbers (all from the live-priced model)
 
@@ -121,7 +125,7 @@ Validate (schema/type/range, API drift) → dedup & canonical-record selection (
 
 **Three-sentence:** *Azure will ingest ~30 sources across three lanes, clean them, and land EDW-ready tables into the OCI staging zone, from which Agiline's aiWorks (running Billow's PL/SQL) loads the EDW. We priced four build options on live Azure rates: ADF, Databricks, Fabric, and roll-your-own — and found the managed three cost about the same to run, so the decision turns on build effort, operations, and fit, not the monthly bill. We recommend ADF as the baseline (lowest ops, most mature Oracle sink), graduating heavy workstreams to Databricks where volume warrants and validating Fabric via a short PoC.*
 
-**One-paragraph:** *This proposal designs the Azure half of the ERC data-ingress model: a tier that sits in front of the Oracle OCI EDW, ingesting External-API, internal, and other-department California data across three lanes, cleaning it, and landing conformed `*_RAW`/`{TYPE}_STG` tables into the EDW's staging zone, from which Agiline's aiWorks loads the EDW using Billow's PL/SQL. We evaluated four build options against a live-priced, reproducible cost model. The headline: at documented mid-size volume the three managed platforms (ADF, Databricks, Fabric) run within roughly $1,500–$2,700/mo of each other, so run cost is not the differentiator — build effort, operating model, and Power BI/ecosystem fit are. Rolling your own from serverless primitives is the cheapest to run (~$1,032/mo) but the most expensive to own (~$388k over three years, ~2.4× ADF) once you price the ~900-hour build and ~40 hrs/month of permanent maintenance. Recommendation: build on ADF, keep the landing contract designed so heavy/streaming workstreams can graduate to Databricks without re-platforming, and run a scoped Fabric PoC before any capacity commitment.*
+**One-paragraph:** *This proposal designs the Azure half of the ERC data-ingress model: a tier that sits in front of the Oracle OCI EDW, ingesting External-API, internal, and other-department California data across three lanes, cleaning it, and landing conformed `*_RAW`/`{TYPE}_STG` tables into the EDW's staging zone, from which Agiline's aiWorks loads the EDW using Billow's PL/SQL. We evaluated four build options against a live-priced, reproducible cost model. The headline: at documented mid-size volume the three managed platforms (ADF, Databricks, Fabric) run within roughly $1,500–$2,700/mo of each other, so run cost is not the differentiator — build effort, operating model, and cost elasticity are (BI-platform fit is not, since BI consumes the Oracle EDW downstream, invariant across approaches). Rolling your own from serverless primitives is the cheapest to run (~$1,032/mo) but the most expensive to own (~$388k over three years, ~2.4× ADF) once you price the ~900-hour build and ~40 hrs/month of permanent maintenance. Recommendation: build on ADF, keep the landing contract designed so heavy/streaming workstreams can graduate to Databricks without re-platforming, and run a scoped Fabric PoC before any capacity commitment.*
 
 ---
 
@@ -133,7 +137,7 @@ Validate (schema/type/range, API drift) → dedup & canonical-record selection (
 
 **What we found.** Costs were built bottoms-up from live Azure retail prices. At the documented workload, the three managed platforms run within a narrow band (~$1,500–$2,700/mo), so the differentiator is build effort, operations, and fit — not the monthly bill. Roll-your-own is the cheapest to run (~$1,032/mo) but the most expensive to own: once the ~900-hour build and ~40 hrs/month of ongoing maintenance are counted, its three-year total (~$388k) is roughly 2.4× ADF's (~$159k). Managed platforms convert that permanent labor liability into a small, supported run cost.
 
-**Recommendation.** Build on **ADF** — lowest ops, most mature Oracle sink, gentlest cost elasticity if volumes grow. Design the landing contract and lake so heavy/streaming workstreams (telematics, high-volume ops) can **graduate to Databricks** patterns incrementally. Keep **Fabric** as a strategic option given ERC's Power BI orientation, validated by a short PoC (its F8-reserved total is the lowest of all *if* the workload tunes to fit). Where a single step is expensively served by a Data Flow, drop a Function or Container Apps Job under ADF's orchestration to capture roll-your-own's serverless savings without owning a framework.
+**Recommendation.** Build on **ADF** — lowest ops, most mature Oracle sink, gentlest cost elasticity if volumes grow. Design the landing contract and lake so heavy/streaming workstreams (telematics, high-volume ops) can **graduate to Databricks** patterns incrementally. Keep **Fabric** as a cost-only option — its F8-reserved total is the lowest of all *if* the workload tunes to fit — validated by a short PoC (not chosen for Power BI fit: BI consumption is downstream of aiWorks on the Oracle EDW and invariant across approaches). Where a single step is expensively served by a Data Flow, drop a Function or Container Apps Job under ADF's orchestration to capture roll-your-own's serverless savings without owning a framework.
 
 **Next step.** A 2–3 week PoC landing two contrasting feeds end-to-end into OCI Bronze — GeoTab telematics (Lane 1: custom auth + streaming) and FastTrak or CGI Advantage (Lane 3: SFTP + XREF reconciliation) — with the `QUAR_`/manifest handoff to Agiline's aiWorks (which loads the EDW with Billow's PL/SQL). This converts every estimate to a committed number and de-risks the platform choice with data.
 
@@ -223,7 +227,7 @@ Azure↔OCI connectivity (Interconnect / Oracle Database@Azure vs private endpoi
 
 ## 12. Glossary
 
-**SSOR** (Source) System of Record · **Medallion** Bronze/Silver/Gold layering · **SCD2** history-preserving dimension · **`*_RAW`** immutable source extract (Bronze) · **`{TYPE}_STG`** validated staging table · **`QUAR_`** quarantine (rejected rows + reason) · **`XREF_`** code-reconciliation bridge · **aiWorks** Agiline Software's platform that picks up the staged data and loads it into the EDW, executing Billow's PL/SQL scripts (this staging→EDW load is Agiline's job) · **Agiline** the party that completes the staging→EDW load via aiWorks · **Billow** lands data in staging (this proposal's tier), provides the PL/SQL scripts aiWorks runs, and consumes the EDW into Power BI · **SHIR** Self-Hosted Integration Runtime (ADF private connector host) · **DIU** Data Integration Unit (ADF copy compute) · **DBU** Databricks Unit (consumption) · **F-SKU / CU** Fabric capacity SKU / Capacity Unit · **`DBMS_CLOUD`** Oracle package to load from object storage · **Durable Functions** Azure serverless orchestration · **Container Apps Jobs** serverless container batch compute.
+**SSOR** (Source) System of Record · **Medallion** Bronze/Silver/Gold layering · **SCD2** history-preserving dimension · **`*_RAW`** immutable source extract (Bronze) · **`{TYPE}_STG`** validated staging table · **`QUAR_`** quarantine (rejected rows + reason) · **`XREF_`** code-reconciliation bridge · **aiWorks** Agiline Software's platform that picks up the staged data and loads it into the EDW, executing Billow's PL/SQL scripts (this staging→EDW load is Agiline's job) · **Agiline** the party that completes the staging→EDW load via aiWorks · **Billow** lands data in staging (this proposal's tier), provides the PL/SQL scripts aiWorks runs, and consumes the EDW into Power BI · **SHIR** Self-Hosted Integration Runtime (ADF private connector host) · **DIU** Data Integration Unit (ADF copy compute) · **DBU** Databricks Unit (consumption) · **F-SKU / CU** Fabric capacity SKU / Capacity Unit · **`DBMS_CLOUD`** Oracle package to load from object storage · **Durable Functions** Azure serverless orchestration · **Container Apps Jobs** serverless container batch compute · **GoldenGate** Oracle change-data-capture (CDC) replication — separately licensed; only needed for a low-latency telematics landing (P3), not the default batch path; $0 for OCI-native (in-database).
 
 ---
 
