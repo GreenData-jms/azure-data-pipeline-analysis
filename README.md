@@ -14,7 +14,7 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 | **1** | **Oracle OCI-native** — API inbound + in-DB ETL | OCI-native | **$232,716** (BYOL) | [`alternates/alternate-1-oci-native.md`](alternates/alternate-1-oci-native.md) |
 | **2** | **On-premise** — owned stack, ships to OCI | Oracle DB · SQL Server | **$505,580** | [`alternates/alternate-2-on-premise.md`](alternates/alternate-2-on-premise.md) |
 
-**Recommendation: build on ADF (alt 0).** One-glance map of all seven approaches → [`alternates/INDEX.md`](alternates/INDEX.md). Connecting Claude design? Jump to [How to connect](#how-to-connect-this-repo-from-claude-design).
+**Recommendation: build on ADF (alt 0).** One-glance map → [`alternates/INDEX.md`](alternates/INDEX.md). Ready-to-use outputs (deck spec, exec summary, cost one-pager, memo, TL;DR) → [`deliverables/`](deliverables). Connecting Claude design? Jump to [How to connect](#how-to-connect-this-repo-from-claude-design).
 
 ---
 
@@ -56,7 +56,7 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 .
 ├── README.md                        ← overview + index + Claude design connection guide
 ├── DELIVERABLES.md                  ← spec for the analysis deliverables to build in Claude design
-├── CHANGELOG.md                     ← version history (v0.1 → v0.3 → corpus → alternates)
+├── CHANGELOG.md                     ← version history (v0.1 → v0.3 → corpus → alternates → deliverables)
 ├── corpus/
 │   ├── content-corpus.md            ← FEED-READY content source of truth (the 4 Azure options)
 │   └── figures.json                 ← machine-readable numbers (Azure options)
@@ -69,6 +69,10 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 │   ├── seven_approach_cost_model.py ← reproducible 7-approach model (license/infra/labor)
 │   ├── seven-approach-figures.json  ← machine-readable 7-approach figures
 │   └── content-corpus-addendum.md   ← feed-ready content for the 2 new approaches + 7-way view
+├── deliverables/                    ← ready-to-use outputs (gold masters for Claude design)
+│   ├── deck-goldmaster.md           ← slide-by-slide spec of the 14-slide deck
+│   ├── executive-summary.md         ├─ cost-onepager.md
+│   ├── recommendation-memo.md       └─ tldr-card.md
 ├── proposals/
 │   ├── proposal-v0.1.md             ← architecture, 3-lane ingress, DQ, OCI landing
 │   ├── proposal-v0.2.md             ← three Azure peer pipelines + live-priced cost model
@@ -78,16 +82,19 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
     └── README.md                     ← how to run and reprice
 ```
 
+*(The native `ERC_Ingress_GoldMaster_Deck.pptx` is delivered directly, not committed — see `deliverables/README.md`.)*
+
 ---
 
 ## How to connect this repo from Claude design
 
 1. **Content:** `corpus/content-corpus.md` (Azure options) + `alternates/content-corpus-addendum.md` (OCI-native, on-prem, 7-way).
 2. **Numbers:** `corpus/figures.json` + `alternates/seven-approach-figures.json` (includes the license/infra split).
-3. **Targets:** `DELIVERABLES.md` defines each deliverable's audience, format, and source sections.
-4. **Depth / reprice:** `proposals/` + `model/` + `alternates/seven_approach_cost_model.py`.
+3. **Gold masters to re-skin:** `deliverables/` (deck spec, exec summary, cost one-pager, memo, TL;DR).
+4. **Targets:** `DELIVERABLES.md` defines each deliverable's audience, format, and source sections.
+5. **Depth / reprice:** `proposals/` + `model/` + `alternates/seven_approach_cost_model.py`.
 
-Rule of thumb: **corpus + addendum for content, the two figures.json for numbers, proposals/alternates for depth, DELIVERABLES.md for the target.**
+Rule of thumb: **corpus + addendum for content, the two figures.json for numbers, deliverables for gold masters, proposals/alternates for depth, DELIVERABLES.md for the target.**
 
 ---
 
