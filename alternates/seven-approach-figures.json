@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "title": "ERC EDW ingress — seven-approach figures with license vs infrastructure split",
+    "purpose": "Machine-readable source of truth for the full 7-approach comparison. License, infrastructure, and labor are distinct streams, each with capex (one-time) and monthly (recurring). 3-yr TCO = capex + 36 x monthly.",
+    "cost_basis": "Cloud: live Azure Retail (West US, 2026-07-22) + published OCI list. License list prices 2026 (Oracle DB EE $47,500/proc, SE2 ~$17,500/socket, +22%/yr support; SQL 2022 Std $3,944 / Ent $15,122 per 2-core pack, +~25%/yr SA; OIC ~$943/mo/pack; ADW OCPU $4.0288 Lic-Incl / $1.3441 BYOL). On-prem hardware/labor are documented planning estimates.",
+    "caveat": "Planning estimates; not a quote. Enterprise license discounts (50-80% off list) and cloud reservations (30-41% off) are NOT applied. Blended labor $150/hr. Model: seven_approach_cost_model.py.",
+    "as_of": "2026-07-23",
+    "streams": ["license", "infrastructure", "labor"],
+    "tco_formula": "capex + 36 * monthly"
+  },
+  "approaches": {
+    "1_adf":            {"label": "ADF (Azure managed)",            "family": "azure-managed", "capex": {"license": 0, "infra": 0, "build": 56250}, "monthly": {"license": 749, "infra": 905, "ops": 1200}, "tco_3yr": {"license": 26964, "infrastructure": 32580, "labor": 99450, "total": 158994}, "share": {"license_pct": 17, "infra_pct": 20, "labor_pct": 63}},
+    "2_databricks":     {"label": "Databricks (Azure managed)",     "family": "azure-managed", "capex": {"license": 0, "infra": 0, "build": 82500}, "monthly": {"license": 542, "infra": 1185, "ops": 2400}, "tco_3yr": {"license": 19512, "infrastructure": 42660, "labor": 168900, "total": 231072}, "share": {"license_pct": 8, "infra_pct": 18, "labor_pct": 73}},
+    "3_fabric":         {"label": "Fabric (Azure managed)",         "family": "azure-managed", "capex": {"license": 0, "infra": 0, "build": 63750}, "monthly": {"license": 2336, "infra": 335, "ops": 1200}, "tco_3yr": {"license": 84096, "infrastructure": 12060, "labor": 106950, "total": 203106}, "share": {"license_pct": 41, "infra_pct": 6, "labor_pct": 53}},
+    "4_roll_your_own":  {"label": "Roll-your-own (Azure)",          "family": "azure-diy",     "capex": {"license": 0, "infra": 0, "build": 135000}, "monthly": {"license": 198, "infra": 834, "ops": 6000}, "tco_3yr": {"license": 7128, "infrastructure": 30024, "labor": 351000, "total": 388152}, "share": {"license_pct": 2, "infra_pct": 8, "labor_pct": 90}},
+    "5_oci_native":     {"label": "Oracle OCI-native (Lic-Incl)",   "family": "oci",           "capex": {"license": 0, "infra": 0, "build": 52500}, "monthly": {"license": 3175, "infra": 975, "ops": 1500}, "tco_3yr": {"license": 114300, "infrastructure": 35100, "labor": 106500, "total": 255900}, "share": {"license_pct": 45, "infra_pct": 14, "labor_pct": 42}, "egress": "zero cross-cloud (data stays in OCI)"},
+    "6_onprem_oracle":  {"label": "On-prem Oracle DB (SE2)",        "family": "on-premise",    "capex": {"license": 35000, "infra": 120000, "build": 75000}, "monthly": {"license": 642, "infra": 2513, "ops": 4500}, "tco_3yr": {"license": 58112, "infrastructure": 210468, "labor": 237000, "total": 505580}, "share": {"license_pct": 11, "infra_pct": 42, "labor_pct": 47}},
+    "7_onprem_sqlserver": {"label": "On-prem SQL Server (Std)",     "family": "on-premise",    "capex": {"license": 37707, "infra": 120000, "build": 67500}, "monthly": {"license": 786, "infra": 2513, "ops": 4500}, "tco_3yr": {"license": 66003, "infrastructure": 210468, "labor": 229500, "total": 505971}, "share": {"license_pct": 13, "infra_pct": 42, "labor_pct": 45}}
+  },
+  "reference_variants": {
+    "5b_oci_byol":        {"label": "OCI-native (BYOL)",           "tco_3yr": {"license": 67896, "infrastructure": 58320, "labor": 106500, "total": 232716}, "note": "ADW at BYOL rate; license = OIC only; assumes owned Oracle DB licenses"},
+    "6b_onprem_oracle_ee":{"label": "On-prem Oracle EE",          "tco_3yr": {"license": 315388, "infrastructure": 210468, "labor": 237000, "total": 762856}, "note": "EE license alone (~$315k/3yr) exceeds the entire ADF TCO"},
+    "7b_onprem_sql_ent":  {"label": "On-prem SQL Server (Ent)",   "tco_3yr": {"license": 222519, "infrastructure": 210468, "labor": 229500, "total": 662487}}
+  },
+  "ranking_by_tco_3yr": ["1_adf", "3_fabric", "2_databricks", "5_oci_native", "4_roll_your_own", "6_onprem_oracle", "7_onprem_sqlserver"],
+  "license_list_prices_2026": {
+    "oracle_db_ee_per_processor": 47500,
+    "oracle_db_se2_per_socket": 17500,
+    "oracle_support_pct_per_year": 22,
+    "oracle_partitioning_per_processor": 11500,
+    "oracle_odi_per_processor_est": 30000,
+    "sqlserver_2022_standard_2core_pack": 3944,
+    "sqlserver_2022_enterprise_2core_pack": 15122,
+    "sqlserver_sa_pct_per_year_est": 25,
+    "windows_server_datacenter_16core": 6155,
+    "oic_message_pack_monthly_est": 943,
+    "adw_ocpu_hour_license_included": 4.0288,
+    "adw_ocpu_hour_byol": 1.3441,
+    "adw_storage_tb_month": 118.40,
+    "oci_object_storage_gb_month": 0.0255,
+    "oci_fastconnect_1gbps_port_hour": 0.018
+  },
+  "key_findings": [
+    "License is an explicit separable SKU on-prem and in Oracle OCI; hyperscalers bundle it into the service rate.",
+    "Fabric is ~41% license (capacity subscription); Databricks DBU is license on rented infra; roll-your-own is only 2% license (traded for 90% labor).",
+    "On-prem TCO (~$506k) is dominated by infrastructure (hardware ~$210k/3yr) + labor (~$162k/3yr), not license — for Standard/SE2 tiers.",
+    "Oracle Enterprise Edition license alone (~$315k/3yr) exceeds the entire Azure-managed ADF TCO (~$159k).",
+    "OCI-native BYOL (~$233k) + zero cross-cloud egress is the strongest single-vendor/data-gravity play.",
+    "Ranking by 3-yr TCO: ADF $159k < Fabric $203k < Databricks $231k < OCI-native $256k < Roll-your-own $388k < On-prem SE2/SQL ~$506k < Oracle EE $763k."
+  ]
+}
