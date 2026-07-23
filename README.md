@@ -2,7 +2,7 @@
 
 Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds the Caltrans **Equipment Reporting Center (ERC) Enterprise Data Warehouse** (Oracle Autonomous Data Warehouse on OCI). Single source of truth for the analysis and the **connection point for Claude design** to generate downstream deliverables (TL;DRs, executive summaries, analysis pillars, presentations).
 
-> **In one line:** ingest ~30 sources across three lanes, clean them, ETL them into the structures the ERC logical model expects, and land the finished tables into the OCI EDW Bronze zone — where Billow/aiWorks promotes them to Silver/Gold. This repo evaluates **seven ways to build that tier** and prices each with **license and infrastructure as distinct cost items**.
+> **In one line:** ingest ~30 sources across three lanes, clean them, ETL them into the structures the ERC logical model expects, and land the finished tables into the OCI EDW Bronze zone — where Billow (using Agiline's aiWorks platform) promotes them to Silver/Gold. This repo evaluates **seven ways to build that tier** and prices each with **license and infrastructure as distinct cost items**.
 
 ---
 
@@ -100,7 +100,9 @@ Rule of thumb: **corpus + addendum for content, the two figures.json for numbers
 
 ## What this tier is (and isn't)
 
-An **ingest → cleanse → ETL → stage** tier that lands clean, conformed `*_RAW` + `{TYPE}_STG` + `QUAR_` tables (ERC Naming Standards v3.0) into the OCI EDW Bronze zone; Billow/aiWorks owns everything after. The landing contract is identical across approaches, so the platform choice is **reversible** — except OCI-native, where ingestion runs *inside* the EDW's cloud and the landing step disappears entirely.
+An **ingest → cleanse → ETL → stage** tier that lands clean, conformed `*_RAW` + `{TYPE}_STG` + `QUAR_` tables (ERC Naming Standards v3.0) into the OCI EDW Bronze zone; Billow — using Agiline's aiWorks platform plus Billow-provided PL/SQL — owns everything after. The landing contract is identical across approaches, so the platform choice is **reversible** — except OCI-native, where ingestion runs *inside* the EDW's cloud and the landing step disappears entirely.
+
+*(aiWorks is Agiline Software's platform, which Billow operates — it is not a Billow product.)*
 
 ---
 
