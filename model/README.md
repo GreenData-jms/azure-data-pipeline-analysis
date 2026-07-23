@@ -2,6 +2,8 @@
 
 A reproducible, bottoms-up cost model for the four Azure ingress options. Unit prices are **live Azure Retail Prices** (region West US, PAYG Consumption, pulled 2026-07-22); volumes are **documented, editable assumptions**.
 
+> **Full assumptions & basis:** [`ASSUMPTIONS.md`](ASSUMPTIONS.md) — every data-volume, compute (with SKUs), storage, bandwidth, and labor assumption behind the numbers, a worked Variant-A build-up, the load-bearing-vs-rounding-error read, and the off-Azure sizing. Feeds the deck's basis & appendix slides.
+
 ## Run it
 
 ```bash
