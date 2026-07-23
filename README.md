@@ -32,6 +32,8 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 
 *Alternate 0 = the Azure family (approaches 1–4); alternate 1 = Oracle OCI-native; alternate 2 = on-premise. Cloud: live Azure Retail (West US, 2026-07-22) + published OCI list. License list prices 2026. Planning estimates; enterprise discounts & reservations not applied. Model: `alternates/seven_approach_cost_model.py`.*
 
+> **Read the numbers as a band, not a ranking.** The three managed options (ADF/Fabric/Databricks) sit in a **~$159k–$231k window that is inside the labor-estimate noise** — ADF is at the low edge, but the order within the trio is not a measurement. Only the **cross-family** gaps (managed band vs OCI-native vs roll-your-own vs on-prem) are decisive. For OCI-native, the like-for-like comparator is **BYOL ~$233k** (you already own Oracle DB licenses for the EDW), not the Lic-Incl $256k. Two contingencies sit *outside* these figures and both favor OCI-native: a conditional **GoldenGate** line if telematics needs CDC (~$8k–58k/3yr; $0 for OCI-native) and cross-cloud **egress** (immaterial in dollars, but zero for OCI-native).
+
 ## License vs Infrastructure vs Labor — the requested split
 
 | Approach | License 3yr | Infra 3yr | Labor 3yr | License % |
@@ -45,6 +47,8 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 | 7. On-prem SQL Server Std | $66,003 | $210,468 | $229,500 | 13% |
 
 **What it reveals:** license is an explicit SKU off-cloud but bundled into hyperscaler rates (Fabric ≈ all license; roll-your-own trades license for labor). On-prem cost is dominated by hardware + labor, not license — *unless* Oracle Enterprise Edition, whose license alone (~$315k/3yr) exceeds the entire ADF TCO.
+
+> **Scope invariant (important):** whichever approach builds it, this tier's output is **Oracle EDW staging tables**. Power BI consumption is **downstream and invariant** — Agiline's aiWorks loads the Oracle EDW from staging (running Billow's PL/SQL), then Billow consumes the Oracle EDW into Power BI. So **BI-platform "nativeness" (Fabric/OneLake/Power BI) is not an ingress-tier selection factor**; Fabric is judged on cost + Oracle-sink maturity + capacity only.
 
 **Recommendation (unchanged, now with 7 analyses behind it):** build on **ADF** — lowest total cost and lowest labor risk. **OCI-native** is the strongest non-Azure option (data gravity + zero cross-cloud egress, especially BYOL). **On-premise** is justified only by a residency/sovereignty mandate or existing on-prem investment.
 

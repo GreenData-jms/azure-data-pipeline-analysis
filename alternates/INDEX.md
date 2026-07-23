@@ -22,9 +22,11 @@ Three parallel strategy write-ups cover seven approaches. This is the fastest wa
 
 *Reference variants: OCI-native BYOL $232,716 · On-prem Oracle EE $762,856 · On-prem SQL Enterprise $662,487.*
 
+> **Ranks 1–3 are a BAND, not an order.** ADF/Fabric/Databricks ($159k/$203k/$231k) sit inside the labor-estimate noise — ADF at the low edge, but the sequence within the trio is not a measurement. Only the cross-family gaps (managed band vs OCI-native vs roll-your-own vs on-prem) are decisive. For OCI-native, **BYOL $233k** is the like-for-like comparator (owned Oracle licenses), ~$30k above ADF and level with Fabric.
+
 ## The one-line verdict
 
-**Build on ADF (alternate 0).** Lowest total cost and lowest labor risk. **OCI-native (alt 1)** is the strongest non-Azure option — data gravity + zero cross-cloud egress, especially under BYOL. **On-premise (alt 2)** is justified only by a data-residency/sovereignty mandate or existing on-prem investment; it runs ~3× ADF, and Oracle Enterprise Edition's license alone exceeds the entire ADF TCO.
+**Build on ADF (alternate 0)** — low edge of the managed cost band, lightest build, lowest labor risk. **OCI-native (alt 1)** is the strongest non-Azure option and closer than the ranking implies (BYOL ~$233k) — data gravity + zero cross-cloud egress + no GoldenGate; prefer Azure over it on **workload isolation + connector breadth**, not cost. **On-premise (alt 2)** is justified only by a data-residency/sovereignty mandate or existing on-prem investment; it runs ~3× ADF, and Oracle Enterprise Edition's license alone exceeds the entire ADF TCO. *Scope invariant: every approach lands in Oracle staging and Power BI consumes the Oracle EDW downstream — BI-platform nativeness is not a selection factor.*
 
 ## Where things live
 

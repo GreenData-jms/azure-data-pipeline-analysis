@@ -4,10 +4,15 @@ This file defines the deliverables to generate from this analysis. It is the **t
 
 **Global consistency rules (apply to every deliverable):**
 - The tier is a staging tier *in front of* the Oracle EDW — never a replacement (except OCI-native, where it runs *inside* OCI).
+- **Scope invariant:** every approach lands its output in the Oracle EDW **staging** zone. Power BI consumption is **downstream and invariant** — Agiline's aiWorks loads the Oracle EDW from staging (running Billow's PL/SQL), then Billow consumes the Oracle EDW into Power BI. Power BI never reads the ingestion substrate, so **BI-platform "nativeness" (Fabric / OneLake / Power BI) is NOT an ingress-tier selection factor** — do not use it to prefer or rank an approach. Judge Fabric on cost + Oracle-sink maturity + capacity only.
 - Seven approaches across three families (Azure managed: ADF/Databricks/Fabric; Azure DIY: roll-your-own; off-Azure: OCI-native, on-prem Oracle, on-prem SQL Server); peers on capability, differing on cost/effort/fit.
 - **License and infrastructure are distinct cost items** in every approach; numbers come from the figures files.
+- **Present the managed three as a BAND, not a ranking:** ADF/Fabric/Databricks fall in a ~$159k–$231k window that is inside the labor-estimate noise (ADF at the low edge). Only the **cross-family** gaps (managed band vs OCI-native vs roll-your-own vs on-prem) are decisive enough to state as an order.
+- **Compare OCI-native at BYOL (~$233k)** — the like-for-like case, since the org already owns Oracle DB licenses for the EDW (Lic-Incl $256k is the no-owned-license case). Prefer Azure over OCI-native on **workload isolation** (don't run ETL on the ADW that serves reporting) + **connector breadth**, not on TCO.
+- **Two contingencies sit outside the base TCO, both favoring OCI-native:** (1) if telematics needs low-latency **CDC**, add **GoldenGate** (~$8k BYOL-managed / ~$35k Lic-Incl-managed / ~$58k perpetual over 3yr; applies to every Azure approach; OCI-native = $0) — the default P2 batch landing needs none; (2) cross-cloud **egress** is immaterial in dollars (~$365/3yr) but is the one line OCI-native zeroes. Both are PoC exit questions.
 - Cost figures are **planning estimates** (state once per artifact).
-- Recommendation: **ADF baseline**; OCI-native = strongest non-Azure option; on-prem only for residency/sovereignty or sunk investment.
+- Recommendation: **ADF baseline**; OCI-native = strongest non-Azure option (BYOL); on-prem only for residency/sovereignty or sunk investment.
+- **PoC exit criteria:** land both feeds end-to-end into OCI staging — GeoTab telematics **via the intended streaming/CDC path** (to answer the GoldenGate question) + FastTrak/CGI via P2 — and return real build/ops hours to collapse the cost band into measured numbers; run a Fabric F-SKU trial in parallel on cost grounds only.
 
 ---
 
