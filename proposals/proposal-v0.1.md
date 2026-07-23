@@ -18,7 +18,7 @@ All three variants satisfy the same non-negotiables: **Azure Data Factory plus t
 
 **Recommendation:** Start with **Variant A** as the delivery baseline — the most direct realization of the board, lowest-risk path to a working OCI landing, cheapest to stand up. Graduate heavy workstreams to **Variant B** patterns where telematics volume/SCD2 complexity warrant (A and B share ADLS Gen2 and the same landing contract). Keep **Variant C (Fabric)** on the table because ERC is already a Power BI shop.
 
-*(Note: v0.2 supersedes this framing — the three are re-cast as co-equal peer pipelines with a live-priced cost model; v0.3 adds a fourth roll-your-own variant. This document is retained for the architecture, DQ, and landing detail. aiWorks is Agiline Software's platform; the staging→EDW load is Agiline's job — not a Billow product.)*
+*(Note: v0.2 supersedes this framing — the three are re-cast as co-equal peer pipelines with a live-priced cost model; v0.3 adds a fourth roll-your-own variant. This document is retained for the architecture, DQ, and landing detail. aiWorks is Agiline Software's platform; the staging→EDW load is Agiline's job — not a Billow product. Scope invariant: every approach lands in Oracle EDW staging and Power BI consumes the Oracle EDW downstream of aiWorks, invariant across approaches — so BI-platform "nativeness" is not a platform-selection factor.)*
 
 ---
 
@@ -72,7 +72,7 @@ Mirror the medallion in Azure with Delta. **Ingress:** ADF (batch) + Event Hubs 
 
 ## 7. Variant C — Microsoft Fabric (unified SaaS)
 
-One SaaS platform, Power BI-native, capacity billing. **Ingress:** Fabric Data Factory + Dataflows Gen2 (Power Query) + Fabric Notebooks. **Storage:** Fabric Lakehouse (OneLake) + Warehouse (T-SQL). **Cleanse+ETL:** Dataflows Gen2 + Notebooks. **Landing:** Fabric Copy → Oracle / Parquet to OCI. **Strengths:** one platform/bill, predictable F-SKU capacity, low-code Power Query fit, tightest Power BI integration. **Limits:** newest; Oracle sink maturity to validate; capacity sizing needs tuning.
+One SaaS platform, Power BI-native, capacity billing. **Ingress:** Fabric Data Factory + Dataflows Gen2 (Power Query) + Fabric Notebooks. **Storage:** Fabric Lakehouse (OneLake) + Warehouse (T-SQL). **Cleanse+ETL:** Dataflows Gen2 + Notebooks. **Landing:** Fabric Copy → Oracle / Parquet to OCI. **Strengths:** one platform/bill, predictable F-SKU capacity, low-code Power Query fit, tightest Power BI integration. **Limits:** newest; Oracle sink maturity to validate; capacity sizing needs tuning. *(Per the scope invariant added in v1.1, Power BI integration is not an ingress-tier selection factor — BI consumes the Oracle EDW downstream of aiWorks; judge Fabric on cost + Oracle-sink maturity + capacity. This section is retained as the original v0.1 architecture detail.)*
 
 ---
 

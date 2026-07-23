@@ -63,6 +63,8 @@ A managed platform's price *includes* the engineering that keeps the pipeline en
 | Fabric | ~8 hrs/mo | Managed SaaS |
 | Roll-your-own | ~40 hrs/mo | You own the framework: connector drift, patching, security, custom monitoring, on-call — no vendor support |
 
+**Decompose the hours — connector-drift (shared) vs engine upkeep (differs).** A large slice of ops is maintaining ~30 bespoke source handlers as external APIs drift (GeoTab, Tesla/ChargePoint OAuth, AssetWorks REST versioning, other-dept file schemas). At a planning rate of ~2 breaking changes/source/yr × 2 h, that shared **connector-drift slice is ~10 h/mo and is roughly constant across all four** approaches — nobody but you maintains your GeoTab handler, ADF included. What actually *differs* is the **engine-upkeep** slice: ADF ~0, Fabric ~0, Databricks ~6 (cluster/runtime), roll-your-own ~30 (the whole framework). So ADF's advantage is precisely **"near-zero *engine* upkeep,"** not "lowest *total* ops" — and if connector volatility is high, the realized ops of all four converge upward while roll-your-own still carries its extra ~30 h/mo. This *narrows* the ADF-vs-Databricks/Fabric ops gap but leaves the ADF-vs-roll-your-own gap intact (the point of §5). The connector-volatility rate is an editable lever in `../alternates/seven_approach_cost_model.py`.
+
 ---
 
 ## 5. Four-way comparison — the honest total
