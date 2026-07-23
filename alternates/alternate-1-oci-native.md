@@ -63,7 +63,7 @@ Under Bring-Your-Own-License the ADW compute drops to the $1.3441/OCPU-hr rate, 
 | Infrastructure | **~$1,620** (ADW BYOL compute + storage + gateway + functions + object storage) |
 | Labor (ops) | ~$1,500/mo + build ~$52,500 |
 
-**3-yr TCO (BYOL): ~$232,700** — and the Oracle DB license you "bring" is a capex you likely already carry for the EDW itself.
+**3-yr TCO (BYOL): ~$232,700** — and the Oracle DB license you "bring" is a capex you likely already carry for the EDW itself. **This BYOL figure, not the Lic-Incl $256k, is the like-for-like comparator to the Azure family** (Azure bundles no separately-owned license): at ~$233k it is only ~$30k above ADF, level with Fabric, and *below* Databricks and roll-your-own. It also carries **no GoldenGate and no cross-cloud egress** — two lines every Azure approach may pay (GoldenGate ~$8k–58k/3yr if telematics needs CDC; egress immaterial in dollars). So on cost the Azure-vs-OCI-native gap is not decisive; the case for Azure rests elsewhere (see below).
 
 ---
 
@@ -71,7 +71,7 @@ Under Bring-Your-Own-License the ADW compute drops to the $1.3441/OCPU-hr rate, 
 
 **Strengths.** Single vendor, single cloud — no second platform to run, secure, or reconcile. **Zero cross-cloud egress** and no data-gravity fight: ingestion happens where the warehouse already is. ETL runs **in-database** (set-based, fast, no movement tier). Oracle-native orchestration (OIC) with prebuilt adapters. Operationally the simplest to reason about because there is one place data lives.
 
-**Limits.** Ties ingestion tightly to Oracle and to OIC's per-message commercial model. Under **License-Included**, ADW OCPU carries a real software premium (the biggest single "license" line of any managed approach here). OIC is less flexible than code for the most irregular external APIs (still need Functions). Deeper Oracle/OIC/ODI skill concentration; more Oracle lock-in. Autonomous scaling must be watched so ingestion OCPU doesn't inflate the EDW bill.
+**Limits.** Ties ingestion tightly to Oracle and to OIC's per-message commercial model. Under **License-Included**, ADW OCPU carries a real software premium (the biggest single "license" line of any managed approach here). OIC is less flexible than code for the most irregular external APIs (still need Functions). Deeper Oracle/OIC/ODI skill concentration; more Oracle lock-in. **Workload isolation is the decisive limit and the strongest single argument for the Azure family:** ETL runs in the *same* Autonomous DW that serves Power BI reporting, so ingestion OCPU competes with the reporting workload — you must size/isolate a separate OCPU pool or a second ADW instance, and autoscaling must be watched so ingestion doesn't inflate the EDW bill. An external Azure tier keeps that load off the reporting warehouse entirely.
 
 **Best when:** the organization is already all-in on OCI/Oracle for the EDW (it is), values single-vendor operational simplicity and data gravity over best-of-breed flexibility, and can **BYOL** to neutralize the ADW license premium. In that BYOL case this is arguably the most *architecturally coherent* option — the ingestion lives inside the warehouse's own cloud and the "landing" problem vanishes.
 

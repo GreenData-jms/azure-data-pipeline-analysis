@@ -74,10 +74,14 @@ This folder holds the three parallel strategy write-ups and re-costs **all seven
 
 ## Ranking & recommendation
 
-**3-yr TCO:** ADF $159k < Fabric $203k < Databricks $231k < OCI-native $256k < Roll-your-own $388k < On-prem SE2 $506k ≈ On-prem SQL $506k (< Oracle EE $763k).
+**Read the numbers as a band, then cross-family gaps.** The three managed options are a **BAND — ADF ~$159k / Fabric ~$203k / Databricks ~$231k** — inside the labor-estimate noise (labor is 63–90% of each; ADF at the low edge). Do **not** treat the order within the trio as a measurement. Only the **cross-family** gaps survive the assumptions: **managed band (~$159k–$231k) « OCI-native BYOL ~$233k (Lic-Incl $256k) « Roll-your-own $388k « On-prem SE2/SQL ~$506k « Oracle EE $763k.** Use **BYOL** for OCI-native — the like-for-like case, since the org already owns Oracle DB licenses for the EDW.
 
-**Recommendation stands: build on ADF** (alternate 0) — the lowest total cost *and* the lowest labor-risk. The two off-Azure alternates sharpen, rather than change, that conclusion:
-- **OCI-native (alt 1)** is the option to take seriously **if the program prioritizes single-vendor/single-cloud coherence and data gravity** — especially under BYOL. It is the strongest non-Azure choice.
+**Scope invariant:** every approach lands in Oracle EDW **staging**; Power BI consumes the Oracle EDW downstream of aiWorks, invariant across approaches — so BI-platform "nativeness" (Fabric/Power BI) is **not** a selection factor. Judge Fabric on cost + Oracle-sink maturity + capacity only.
+
+**Two contingencies sit outside the base TCO, both favoring OCI-native:** conditional **GoldenGate** if telematics needs low-latency CDC (~$8k BYOL-managed / ~$35k Lic-Incl-managed / ~$58k perpetual over 3yr; applies to every Azure approach; **$0** for OCI-native — the default P2 batch landing needs none), and cross-cloud **egress** (immaterial in dollars, ~$365/3yr; **$0** for OCI-native). Both are PoC exit questions.
+
+**Recommendation stands: build on ADF** (alternate 0) — at the **low edge of the managed band** with the lightest build and lowest labor-risk. The two off-Azure alternates sharpen, rather than change, that conclusion:
+- **OCI-native (alt 1)** is closer than the headline implies (BYOL ~$233k, ~$30k above ADF and level with Fabric) and is the option to take seriously **if the program prioritizes single-vendor/single-cloud coherence and data gravity**. Prefer Azure over it on **workload isolation** (don't run ETL on the ADW that serves reporting) + connector breadth — *not* on TCO. It is the strongest non-Azure choice.
 - **On-premise (alt 2)** is justified **only by a hard data-residency/sovereignty mandate or a large existing on-prem investment to amortize** — it is ~3× the cost of ADF and concentrates hardware + operational risk on the team.
 - The **license/infrastructure split** is now a permanent lens in the model: change a license tier (SE2↔EE, Std↔Ent, Lic-Incl↔BYOL) or a hardware/facilities assumption and re-run to see each lever move independently.
 

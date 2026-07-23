@@ -8,11 +8,14 @@
 
 - **We now evaluate seven approaches across three families:** Azure managed (ADF, Databricks, Fabric), Azure DIY (roll-your-own), and off-Azure (Oracle OCI-native, on-prem Oracle, on-prem SQL Server).
 - **License and infrastructure are accounted as distinct items in every approach.** This matters because on-prem and Oracle expose license as an explicit SKU, while the hyperscalers bundle it into the consumption rate — the split is the only way to compare them honestly.
-- **The cheapest total is still ADF (~$159k / 3yr); the most expensive is on-premise (~$506k, or ~$763k with Oracle Enterprise Edition).**
+- **The three managed options are a BAND (~$159k–$231k / 3yr), not a ranking** — ADF at the low edge, but the order within the trio is inside the labor-estimate noise. Only cross-family gaps are decisive; the most expensive is on-premise (~$506k, or ~$763k with Oracle Enterprise Edition).
+- **Scope invariant:** every approach lands in Oracle EDW **staging**; Power BI consumes the Oracle EDW downstream of Agiline's aiWorks, invariant across approaches — so **BI-platform "nativeness" (Fabric/Power BI) is not a selection factor.** Judge Fabric on cost + Oracle-sink maturity + capacity only.
+- **Compare OCI-native at BYOL (~$233k)** — the like-for-like case (owned Oracle licenses), ~$30k above ADF and level with Fabric. Prefer Azure over it on **workload isolation** (don't run ETL on the ADW that serves reporting) + connector breadth, not TCO.
+- **Two contingencies sit outside the base TCO, both favoring OCI-native:** conditional **GoldenGate** if telematics needs CDC (~$8k–58k/3yr; every Azure approach; $0 for OCI-native) and cross-cloud **egress** (immaterial dollars; $0 for OCI-native).
 
 ## B. TL;DR blocks (7-approach)
 
-**One-liner:** *Across all seven ways to build this — three Azure managed, Azure DIY, Oracle OCI-native, and two on-prem — ADF is still the lowest total cost; on-premise runs ~3× more and Oracle Enterprise licensing alone can exceed the entire ADF budget.*
+**One-liner:** *Across all seven ways to build this — three Azure managed, Azure DIY, Oracle OCI-native, and two on-prem — the managed options are a band (~$159k–$231k) with ADF at the low edge; on-premise runs ~3× more and Oracle Enterprise licensing alone can exceed the entire ADF budget.*
 
 **Three-sentence:** *We priced seven ingress approaches with license, infrastructure, and labor as separate streams. The managed Azure options cluster at the low end ($159k–$231k over three years), OCI-native sits in the middle ($256k, or $233k BYOL with zero cross-cloud egress), roll-your-own is $388k (labor-heavy), and on-premise is ~$506k+ — driven by hardware and operations, not license, unless you choose Oracle Enterprise Edition, whose license alone tops $315k. ADF remains the recommendation; OCI-native is the strongest non-Azure option on data-gravity grounds.*
 
