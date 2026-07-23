@@ -28,7 +28,7 @@ The decision is not "which is cheapest to run" — they're close. It's build eff
 
 ## 2. Scope recap (condensed; see v0.1)
 
-Azure is an ingest → cleanse → ETL → stage tier in front of the Oracle OCI EDW. Three lanes (External API / Internal SSOR / Other-Dept SSOR), ~30 sources. Landing contract identical across peers: `*_RAW` + `{TYPE}_STG` + `QUAR_` to `ERC_*_BRZ`, ERC v3.0 naming, via P1 (JDBC) / P2 (Object Storage + `DBMS_CLOUD`) / P3 (GoldenGate). Identical contract → reversible choice.
+Azure is an ingest → cleanse → ETL → stage tier in front of the Oracle OCI EDW. Three lanes (External API / Internal SSOR / Other-Dept SSOR), ~30 sources. Landing contract identical across peers: `*_RAW` + `{TYPE}_STG` + `QUAR_` to `ERC_*_BRZ`, ERC v3.0 naming, via P1 (JDBC) / P2 (Object Storage + `DBMS_CLOUD`) / P3 (GoldenGate). Identical contract → reversible choice. (Downstream of the landing, Agiline's aiWorks loads the EDW running Billow's PL/SQL, and Billow consumes the EDW into Power BI.)
 
 ---
 
@@ -91,7 +91,7 @@ DQ framework identical (validate→dedup→XREF→rules→`QUAR_`→SCD2 prep→
 
 Because run cost is close, decide on effort, ops, and fit. **Recommendation:** adopt **Variant A (ADF)** as the delivery baseline, architected so heavy workstreams graduate to **Variant B (Databricks)** patterns without re-platforming (A and B share ADLS Gen2 + the landing contract); keep **Variant C (Fabric)** as the strategic consolidation option, validated by a scoped PoC (its F8-reserved 3-yr TCO ~$101k is the lowest of all *if* it tunes to fit).
 
-**Next step:** a 2–3 week PoC landing two contrasting feeds end-to-end into OCI Bronze — GeoTab telematics (Lane-1 API) + FastTrak/CGI Advantage (Lane-3 file) — with the `QUAR_`/manifest handoff to Billow's aiWorks (Agiline) load. Run the same feeds through a Fabric F-SKU trial to measure real CU burn and validate the Oracle sink.
+**Next step:** a 2–3 week PoC landing two contrasting feeds end-to-end into OCI Bronze — GeoTab telematics (Lane-1 API) + FastTrak/CGI Advantage (Lane-3 file) — with the `QUAR_`/manifest handoff to Agiline's aiWorks load (running Billow's PL/SQL). Run the same feeds through a Fabric F-SKU trial to measure real CU burn and validate the Oracle sink.
 
 ---
 

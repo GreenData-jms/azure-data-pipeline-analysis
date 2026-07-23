@@ -8,7 +8,7 @@
 
 ## 1. The idea
 
-Stand up a **dedicated Azure tier that sits in front of the Oracle OCI EDW**: it ingests ~30 sources across three lanes, cleans them, ETLs them into the structures the ERC logical model expects, and lands the finished `*_RAW` + `{TYPE}_STG` + `QUAR_` tables into the OCI Bronze zone — where Billow (using Agiline's aiWorks platform + Billow-provided PL/SQL) promotes them to Silver/Gold. Azure is an ingest/quality/staging engine, **not** a competing warehouse.
+Stand up a **dedicated Azure tier that sits in front of the Oracle OCI EDW**: it ingests ~30 sources across three lanes, cleans them, ETLs them into the structures the ERC logical model expects, and lands the finished `*_RAW` + `{TYPE}_STG` + `QUAR_` tables into the OCI staging zone — from where Agiline's aiWorks platform loads them into the EDW running Billow's PL/SQL, and Billow then consumes the EDW into Power BI (the staging→EDW load is Agiline's job, not Billow's). Azure is an ingest/quality/staging engine, **not** a competing warehouse.
 
 Unlike alternates 1 and 2, this is a *family* of four interchangeable build options that share one architecture, one data-quality framework, and one landing contract, differing only in the pipeline engine and storage substrate:
 
@@ -34,7 +34,7 @@ Because they share the landing contract, **the choice among them is reversible**
 Immutable raw payloads land first in **ADLS Gen2** (1/2/4) or **OneLake** (3), partitioned `source/entity/yyyy/mm/dd` — the Azure analog of Bronze `*_RAW`; replayable and audit-friendly.
 
 ### 2.3 Storage medium (SQL vs document)
-Relational-by-default for the conformed `{TYPE}_STG` output; NoSQL/JSON (Cosmos, Delta/JSON) only where a source is genuinely semi-structured (GeoTab telematics, NEE, nested AssetWorks). Flatten in Azure and land relational — don't push flattening across the OCI boundary onto Billow.
+Relational-by-default for the conformed `{TYPE}_STG` output; NoSQL/JSON (Cosmos, Delta/JSON) only where a source is genuinely semi-structured (GeoTab telematics, NEE, nested AssetWorks). Flatten in Azure and land relational — don't push flattening across the OCI boundary onto the downstream in-EDW load.
 
 ### 2.4 Data-quality / cleanup framework (identical across all four)
 Validate → dedup & canonical-record (e.g. multi-source fuel WEX+US Bank+EJ Ward → one canonical row) → `XREF` reconcile (CGI↔AssetWorks) → business-rule DQ → route rejects to `QUAR_*` with `REJECT_REASON` (non-blocking) → SCD2 change-detection prep → PII masking (VHSP) → ERC v3.0 naming. Only the *engine* differs (Data Flows / PySpark / Power Query / Python).
@@ -81,7 +81,7 @@ Key Vault (secrets), Managed Identity, private endpoints/VNet, Purview/Fabric ca
 
 Build on **ADF** as the delivery baseline — lowest total cost, lowest ops, most mature Oracle sink, gentlest cost elasticity if volumes grow. Design the landing contract and lake so heavy/streaming workstreams (telematics, high-volume ops) can **graduate to Databricks** patterns incrementally (ADF and Databricks share ADLS Gen2 and the contract). Keep **Fabric** as a strategic option given ERC's Power BI orientation, validated by a scoped PoC (its F8-reserved total is competitive *if* the workload tunes to fit). Treat **roll-your-own** as the cautionary comparator: cheapest to run, most expensive to own — but its cheap serverless primitives (Functions, Container Apps Jobs) can be dropped *under* ADF orchestration for the few steps a Data Flow prices expensively.
 
-**Next step:** a 2–3 week PoC landing two contrasting feeds end-to-end into OCI Bronze — GeoTab telematics (Lane 1) + FastTrak/CGI Advantage (Lane 3) — with the `QUAR_`/manifest hand-off to Billow's aiWorks (Agiline) load.
+**Next step:** a 2–3 week PoC landing two contrasting feeds end-to-end into OCI staging — GeoTab telematics (Lane 1) + FastTrak/CGI Advantage (Lane 3) — with the `QUAR_`/manifest hand-off to Agiline's aiWorks load (which runs Billow's PL/SQL).
 
 ---
 
@@ -95,4 +95,4 @@ Build on **ADF** as the delivery baseline — lowest total cost, lowest ops, mos
 
 ## 7. Risks & assumptions
 
-Azure↔OCI connectivity (Interconnect / Oracle Database@Azure vs private endpoint) affects egress + latency · landing ownership boundary (does Billow want `{TYPE}_STG` or only `*_RAW`?) · VHSP PII masking (pending IT Security) · CB-03 (D_ASSET AcquisitionDate from VX_ASSET/REST, not FA EQ_MAIN) · AssetWorks REST rate limits · Access DB reachability · XREF pre-loads · Fabric capacity sizing (F8 vs F16 swings 3-yr TCO ~$60k) · telematics volume (~30M events/mo) drives Databricks streaming + Fabric capacity · cost figures are planning estimates; reservations (−30–41%) not applied. Full detail in `../proposals/` and `../model/`.
+Azure↔OCI connectivity (Interconnect / Oracle Database@Azure vs private endpoint) affects egress + latency · landing ownership boundary (does the in-EDW load want `{TYPE}_STG` or only `*_RAW`?) · VHSP PII masking (pending IT Security) · CB-03 (D_ASSET AcquisitionDate from VX_ASSET/REST, not FA EQ_MAIN) · AssetWorks REST rate limits · Access DB reachability · XREF pre-loads · Fabric capacity sizing (F8 vs F16 swings 3-yr TCO ~$60k) · telematics volume (~30M events/mo) drives Databricks streaming + Fabric capacity · cost figures are planning estimates; reservations (−30–41%) not applied. Full detail in `../proposals/` and `../model/`.

@@ -10,7 +10,7 @@
 
 ## 1. Executive summary
 
-The ERC Enterprise Data Warehouse is an Oracle Autonomous Data Warehouse on OCI, organized as a four-workstream medallion (Bronze → Silver → Gold). Billow owns the **in-EDW** transformation: the Agiline aiWorks platform (operated by Billow) picks up staged data and Billow-provided PL/SQL lands it into the physical model. What this proposal covers is the **upstream half** of your Whimsical "API & SSOR Data Ingress" board — the Azure platform that **ingests, cleans, ETLs, and stages** the origin data into the exact structures the EDW expects, then **lands the final table set into the OCI Bronze/landing zone** where Billow's aiWorks (Agiline) load takes over.
+The ERC Enterprise Data Warehouse is an Oracle Autonomous Data Warehouse on OCI, organized as a four-workstream medallion (Bronze → Silver → Gold). The **in-EDW** load is Agiline's job: the Agiline aiWorks platform picks up the staged data and executes Billow-provided PL/SQL to land it into the physical model; Billow then consumes the EDW into Power BI. What this proposal covers is the **upstream half** of your Whimsical "API & SSOR Data Ingress" board — the Azure platform that **ingests, cleans, ETLs, and stages** the origin data into the exact structures the EDW expects, then **lands the final table set into the OCI staging/landing zone** where Agiline's aiWorks load (running Billow's PL/SQL) takes over.
 
 Azure is deliberately positioned as an **ingestion, quality, and staging tier that sits in front of the Oracle EDW** — not a competing warehouse. Its job is to turn ~30 heterogeneous sources across three lanes (External API, Internal SSORs, Other-Department SSORs) into clean, conformed, EDW-ready `*_RAW` and `{TYPE}_STG` table sets, and to hand them to OCI on a predictable cadence.
 
@@ -18,7 +18,7 @@ All three variants satisfy the same non-negotiables: **Azure Data Factory plus t
 
 **Recommendation:** Start with **Variant A** as the delivery baseline — the most direct realization of the board, lowest-risk path to a working OCI landing, cheapest to stand up. Graduate heavy workstreams to **Variant B** patterns where telematics volume/SCD2 complexity warrant (A and B share ADLS Gen2 and the same landing contract). Keep **Variant C (Fabric)** on the table because ERC is already a Power BI shop.
 
-*(Note: v0.2 supersedes this framing — the three are re-cast as co-equal peer pipelines with a live-priced cost model; v0.3 adds a fourth roll-your-own variant. This document is retained for the architecture, DQ, and landing detail. aiWorks is Agiline Software's platform, operated by Billow — not a Billow product.)*
+*(Note: v0.2 supersedes this framing — the three are re-cast as co-equal peer pipelines with a live-priced cost model; v0.3 adds a fourth roll-your-own variant. This document is retained for the architecture, DQ, and landing detail. aiWorks is Agiline Software's platform; the staging→EDW load is Agiline's job — not a Billow product.)*
 
 ---
 
@@ -26,11 +26,11 @@ All three variants satisfy the same non-negotiables: **Azure Data Factory plus t
 
 ### 2.1 The Whimsical "API & SSOR Data Ingress" essential concepts
 
-Two ETL execution locations were sketched side by side: **Billow ETL in EDW using aiWorks** (Billow provides PL/SQL; the Agiline aiWorks platform picks up staging and lands per the Physical Data Model — out of scope for Azure but defines our handoff) and **Billow ETL in Azure using Data Factory** ("we do it however we do it": staging in Azure Data Factory Custom Functions & Data Flows, Clean Data, then ETL & Stage origin data into the structures expected in EDW — exactly what this proposal designs). Three ingress lanes feed the cleanse step: **External API**, **Internal SSORs**, **Other Department SSORs**, each → Clean Data → Staging. Two governing asks: **"Clarity of Reasoning"** and **"Evaluate Cost Profile of Each Approach — 3 to 5 best choices."**
+Two ETL execution locations were sketched side by side: **ETL in EDW using aiWorks** (Billow provides the PL/SQL; Agiline's aiWorks platform picks up staging and executes it to land per the Physical Data Model — Agiline's job, out of scope for Azure but defines our handoff) and **ETL in Azure using Data Factory** ("we do it however we do it": staging in Azure Data Factory Custom Functions & Data Flows, Clean Data, then ETL & Stage origin data into the structures expected in EDW — exactly what this proposal designs). Three ingress lanes feed the cleanse step: **External API**, **Internal SSORs**, **Other Department SSORs**, each → Clean Data → Staging. Two governing asks: **"Clarity of Reasoning"** and **"Evaluate Cost Profile of Each Approach — 3 to 5 best choices."**
 
 ### 2.2 The landing target — what "EDW-ready" means
 
-Azure's output slots into the **Bronze** layer of the Oracle medallion schemas: **`*_RAW`** (immutable, append-only source extracts, no business logic), **`{TYPE}_STG`** (validated, typed, deduplicated, pre-transformed staging, e.g. `F_FUEL_TRANSACTION_STG`, `D_ASSET_STG`), **`QUAR_`** (quarantine, invalid rows + `REJECT_REASON`, non-blocking), **`XREF_`** (code reconciliation, CGI Advantage ↔ AssetWorks). Naming per ERC Naming Convention Standards v3.0 (`_KEY` surrogate, `_IDENTIF` degenerate natural key, `_CODE` lookup, layer via schema name only, ≤30-char). **Contract:** Azure guarantees clean, conformed staging tables in the OCI landing zone; Billow guarantees Silver/Gold.
+Azure's output slots into the **Bronze** layer of the Oracle medallion schemas: **`*_RAW`** (immutable, append-only source extracts, no business logic), **`{TYPE}_STG`** (validated, typed, deduplicated, pre-transformed staging, e.g. `F_FUEL_TRANSACTION_STG`, `D_ASSET_STG`), **`QUAR_`** (quarantine, invalid rows + `REJECT_REASON`, non-blocking), **`XREF_`** (code reconciliation, CGI Advantage ↔ AssetWorks). Naming per ERC Naming Convention Standards v3.0 (`_KEY` surrogate, `_IDENTIF` degenerate natural key, `_CODE` lookup, layer via schema name only, ≤30-char). **Contract:** Azure guarantees clean, conformed staging tables in the OCI landing zone; Agiline's aiWorks then loads them into the EDW (running Billow's PL/SQL), and Billow consumes the EDW into Power BI.
 
 ### 2.3 Source inventory — the three lanes
 
@@ -42,7 +42,7 @@ Azure's output slots into the **Bronze** layer of the Oracle medallion schemas: 
 
 ## 3. Positioning — where Azure sits relative to the OCI EDW
 
-Azure is the ingest → land-raw → cleanse+ETL → stage tier; the contract line is the handoff from Azure "STAGE" to the OCI EDW Bronze landing zone (ERC_*_BRZ). Everything left of it is Azure's responsibility (this proposal); everything right is Billow (Agiline aiWorks + PL/SQL) → Silver → Gold → Power BI/OAC.
+Azure is the ingest → land-raw → cleanse+ETL → stage tier; the contract line is the handoff from Azure "STAGE" to the OCI EDW Bronze landing zone (ERC_*_BRZ). Everything left of it is Azure's responsibility (this proposal); everything right is Agiline's aiWorks load (running Billow's PL/SQL) → Silver → Gold → Billow → Power BI/OAC.
 
 ---
 
@@ -52,7 +52,7 @@ Azure is the ingest → land-raw → cleanse+ETL → stage tier; the contract li
 
 **4.2 Raw landing zone.** Every variant lands immutable raw payloads first into a lake (ADLS Gen2 / OneLake), partitioned source/entity/yyyy/mm/dd — the Azure analog of Bronze `*_RAW`; replayable, audit-friendly.
 
-**4.3 Storage medium (R3).** Relational SQL by default for conformed `{TYPE}_STG`; document/NoSQL only where payloads are genuinely semi-structured (GeoTab JSON, NEE, nested AssetWorks). We flatten in Azure and land relational — not push the flattening across the OCI boundary onto Billow.
+**4.3 Storage medium (R3).** Relational SQL by default for conformed `{TYPE}_STG`; document/NoSQL only where payloads are genuinely semi-structured (GeoTab JSON, NEE, nested AssetWorks). We flatten in Azure and land relational — not push the flattening across the OCI boundary onto the in-EDW load.
 
 **4.4 Data cleanup & quality (R4).** validate → dedup & canonical-record → XREF reconcile → business-rule DQ → `QUAR_` rejects → SCD2 prep → PII masking (VHSP) → ERC v3.0 naming.
 
@@ -84,7 +84,7 @@ One SaaS platform, Power BI-native, capacity billing. **Ingress:** Fabric Data F
 | P2 Object Storage + external tables | Parquet/CSV to OCI Object Storage + `DBMS_CLOUD` | bulk, replayable — recommended default |
 | P3 GoldenGate / Data Pump | CDC stream | high-volume/near-real-time |
 
-Contract artifacts per feed: table DDL (ERC v3.0), load manifest (row counts, watermark, batch id), `QUAR_` reject set, completion signal Billow's aiWorks load polls.
+Contract artifacts per feed: table DDL (ERC v3.0), load manifest (row counts, watermark, batch id), `QUAR_` reject set, completion signal Agiline's aiWorks load polls.
 
 ## 9. Data cleanup & quality framework (R4/R5)
 
