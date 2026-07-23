@@ -2,6 +2,8 @@
 
 This file defines the deliverables to generate from this analysis. It is the **target list for Claude design**: each entry says what the deliverable is, who it's for, its format, which sources feed it, and its status. Generate any deliverable by loading the corpus (`corpus/content-corpus.md` + `alternates/content-corpus-addendum.md`) and figures (`corpus/figures.json` + `alternates/seven-approach-figures.json`) and following the source mapping.
 
+> **Building the deck?** See `deliverables/deck-build-plan.md` — the phased **HTML proof → verify → native PPTX** build plan for producing D4 (the presentation deck) in Claude design on the **Caltrans DOE design system**, with ready-to-paste prompts and a verification gate. It expands `deliverables/deck-goldmaster.md` into a 14-slide core + appendix pack.
+
 **Global consistency rules (apply to every deliverable):**
 - The tier is a staging tier *in front of* the Oracle EDW — never a replacement (except OCI-native, where it runs *inside* OCI).
 - **Scope invariant:** every approach lands its output in the Oracle EDW **staging** zone. Power BI consumption is **downstream and invariant** — Agiline's aiWorks loads the Oracle EDW from staging (running Billow's PL/SQL), then Billow consumes the Oracle EDW into Power BI. Power BI never reads the ingestion substrate, so **BI-platform "nativeness" (Fabric / OneLake / Power BI) is NOT an ingress-tier selection factor** — do not use it to prefer or rank an approach. Judge Fabric on cost + Oracle-sink maturity + capacity only.
@@ -26,7 +28,7 @@ Purpose: decision-ready summary. Audience: decision-makers/budget owner. Format:
 Purpose: load-bearing arguments, one visual per pillar. Audience: mixed. Format: 10 panels (pillars 1–6 core + 7–10 from the addendum). Source: corpus §7 + addendum §D. Status: ready.
 
 ## D4 — Presentation deck (full)
-Purpose: review-meeting deck. Audience: Caltrans + Billow. Format: ~16 slides (12 core + the 5 addendum slides). Source: corpus §8 + addendum §F + both figures files. Status: ready.
+Purpose: review-meeting deck. Audience: Caltrans + Billow. Format: 14-slide core + appendix pack. Source: corpus §8 + addendum §F + both figures files. **Build via `deliverables/deck-build-plan.md`** (HTML proof → verify → native PPTX, Caltrans DOE design system). Status: ready.
 
 ## D5 — Cost comparison one-pager
 Purpose: the money view. Audience: budget owner/finance. Format: one page — the 7-approach table + license/infra/labor split. Source: alternates/README + `seven-approach-figures.json`. Status: ready.

@@ -75,6 +75,7 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 │   └── content-corpus-addendum.md   ← feed-ready content for the 2 new approaches + 7-way view
 ├── deliverables/                    ← ready-to-use outputs (gold masters for Claude design)
 │   ├── deck-goldmaster.md           ← slide-by-slide spec of the 14-slide deck
+│   ├── deck-build-plan.md           ← Claude-design build plan: HTML proof → verify → PPTX (Caltrans DOE)
 │   ├── executive-summary.md         ├─ cost-onepager.md
 │   ├── recommendation-memo.md       └─ tldr-card.md
 ├── proposals/
@@ -95,8 +96,9 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 1. **Content:** `corpus/content-corpus.md` (Azure options) + `alternates/content-corpus-addendum.md` (OCI-native, on-prem, 7-way).
 2. **Numbers:** `corpus/figures.json` + `alternates/seven-approach-figures.json` (includes the license/infra split).
 3. **Gold masters to re-skin:** `deliverables/` (deck spec, exec summary, cost one-pager, memo, TL;DR).
-4. **Targets:** `DELIVERABLES.md` defines each deliverable's audience, format, and source sections.
-5. **Depth / reprice:** `proposals/` + `model/` + `alternates/seven_approach_cost_model.py`.
+4. **Deck build plan:** `deliverables/deck-build-plan.md` — the phased **HTML proof → verify → native PPTX** plan for producing the deck in Claude design on the **Caltrans DOE design system** (14-slide core + appendix pack, with ready-to-paste prompts).
+5. **Targets:** `DELIVERABLES.md` defines each deliverable's audience, format, and source sections.
+6. **Depth / reprice:** `proposals/` + `model/` + `alternates/seven_approach_cost_model.py`.
 
 Rule of thumb: **corpus + addendum for content, the two figures.json for numbers, deliverables for gold masters, proposals/alternates for depth, DELIVERABLES.md for the target.**
 
