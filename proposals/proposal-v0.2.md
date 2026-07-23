@@ -91,7 +91,7 @@ DQ framework identical (validate→dedup→XREF→rules→`QUAR_`→SCD2 prep→
 
 Because run cost is close, decide on effort, ops, and fit. **Recommendation:** adopt **Variant A (ADF)** as the delivery baseline, architected so heavy workstreams graduate to **Variant B (Databricks)** patterns without re-platforming (A and B share ADLS Gen2 + the landing contract); keep **Variant C (Fabric)** as the strategic consolidation option, validated by a scoped PoC (its F8-reserved 3-yr TCO ~$101k is the lowest of all *if* it tunes to fit).
 
-**Next step:** a 2–3 week PoC landing two contrasting feeds end-to-end into OCI Bronze — GeoTab telematics (Lane-1 API) + FastTrak/CGI Advantage (Lane-3 file) — with the `QUAR_`/manifest handoff to aiWorks. Run the same feeds through a Fabric F-SKU trial to measure real CU burn and validate the Oracle sink.
+**Next step:** a 2–3 week PoC landing two contrasting feeds end-to-end into OCI Bronze — GeoTab telematics (Lane-1 API) + FastTrak/CGI Advantage (Lane-3 file) — with the `QUAR_`/manifest handoff to Billow's aiWorks (Agiline) load. Run the same feeds through a Fabric F-SKU trial to measure real CU burn and validate the Oracle sink.
 
 ---
 
