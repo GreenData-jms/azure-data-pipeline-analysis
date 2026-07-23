@@ -1,6 +1,8 @@
 # Cost One-Pager — Seven Approaches, License vs Infrastructure vs Labor
 
-*3-yr TCO = capex + 36 × monthly. Cloud = live Azure Retail (West US, PAYG, 22 Jul 2026); off-cloud = published OCI list + 2026 Oracle/Microsoft license list prices. Planning estimates; enterprise discounts (50–80%) and cloud reservations (30–41%) not applied. Blended labor $150/hr.*
+*3-yr TCO = capex + 36 × monthly. Cloud = live Azure Retail (West US, PAYG, 22 Jul 2026); off-cloud = published OCI list + 2026 Oracle/Microsoft license list prices. Planning estimates; enterprise discounts (50–80%) and cloud reservations (30–41%) not applied. Blended labor $150/hr (a single blended rate; senior Spark/platform work would price above it — a two-rate lever is in the model).*
+
+> **Read the managed three as a band, not a ranking.** ADF/Fabric/Databricks ($159k/$203k/$231k) fall inside the labor-estimate noise (labor is 63–90% of each); ADF is at the low edge but the order within the trio is not a measurement. Only the **cross-family** gaps below are decisive. For **OCI-native use the BYOL figure ($233k)** as the like-for-like comparator (owned Oracle DB licenses) — it is ~$30k above ADF and level with Fabric.
 
 | Approach | Alt | License 3yr | Infrastructure 3yr | Labor 3yr | Capex | Monthly | **3-yr TCO** |
 |---|---|---|---|---|---|---|---|
@@ -25,6 +27,15 @@
 | OCI-native (Lic-Incl) | 45% | 14% | 42% |
 | On-prem Oracle SE2 | 11% | 42% | 47% |
 | On-prem SQL Server Std | 13% | 42% | 45% |
+
+## Contingencies (outside the base TCO — both favor OCI-native)
+
+| Contingency | When it applies | 3-yr cost | OCI-native |
+|---|---|---|---|
+| **GoldenGate** (telematics CDC) | only if the telematics lane needs low-latency CDC — default P2 batch needs none | ~$8k (OCI-mgd BYOL) / ~$35k (OCI-mgd Lic-Incl) / ~$58k (perpetual); applies to **every** Azure approach | **$0** (in-DB CDC) |
+| **Cross-cloud egress** (Azure→OCI) | always, for any Azure approach | ~$365 (immaterial in dollars) | **$0** |
+
+*Both are PoC exit questions. GoldenGate is the only one that could move a budget — if telematics requires it, every Azure option's license line rises and the gap to OCI-native narrows further.*
 
 ## The four things the split reveals
 
