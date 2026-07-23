@@ -1,6 +1,6 @@
 # Executive Summary — ERC EDW Data-Ingress Tier
 
-**Situation.** The ERC EDW (Oracle Autonomous Data Warehouse on OCI, four-workstream medallion) needs a reliable tier that turns ~30 heterogeneous sources — vendor APIs, internal databases, and other California department systems — into clean, conformed, EDW-ready tables and lands them in the OCI Bronze zone, where Billow's aiWorks completes the load. This is the "ingest → cleanse → ETL → stage" tier from the API & SSOR Data Ingress concept.
+**Situation.** The ERC EDW (Oracle Autonomous Data Warehouse on OCI, four-workstream medallion) needs a reliable tier that turns ~30 heterogeneous sources — vendor APIs, internal databases, and other California department systems — into clean, conformed, EDW-ready tables and lands them in the OCI Bronze zone, where Billow completes the load using the Agiline aiWorks platform plus Billow-provided PL/SQL. This is the "ingest → cleanse → ETL → stage" tier from the API & SSOR Data Ingress concept.
 
 **What we evaluated.** Seven ways to build it, across three families: **Azure managed** (ADF, Databricks, Fabric), **Azure DIY** (roll-your-own from serverless primitives), and **off-Azure** (Oracle OCI-native, on-prem Oracle DB, on-prem SQL Server). Each was costed bottoms-up with **license, infrastructure, and labor as distinct streams** (capex + monthly), on live Azure retail prices and 2026 Oracle/Microsoft license list prices.
 
@@ -8,6 +8,6 @@
 
 **Recommendation.** Build on **ADF** — lowest total cost and lowest labor risk. Design the landing contract and lake so heavy/streaming workstreams can **graduate to Databricks** incrementally. Keep **Fabric** as a Power-BI-native option, validated by a scoped PoC. **Oracle OCI-native** is the strongest non-Azure choice on data-gravity grounds — it removes the cross-cloud hop entirely and, under BYOL, lands at ~$233k. **On-premise** is justified only by a hard data-residency/sovereignty mandate or a large existing on-prem investment.
 
-**Next step.** A 2–3 week PoC landing two contrasting feeds end-to-end into OCI Bronze — GeoTab telematics (Lane 1) and FastTrak or CGI Advantage (Lane 3) — with the QUAR_/manifest hand-off to aiWorks. This converts every estimate into a committed number and de-risks the platform choice with data.
+**Next step.** A 2–3 week PoC landing two contrasting feeds end-to-end into OCI Bronze — GeoTab telematics (Lane 1) and FastTrak or CGI Advantage (Lane 3) — with the QUAR_/manifest hand-off to Billow's aiWorks (Agiline) load. This converts every estimate into a committed number and de-risks the platform choice with data.
 
 *All figures are planning estimates; enterprise license discounts (50–80% off list) and cloud reservations (30–41% off) are not applied. Reproduce via `../alternates/seven_approach_cost_model.py`.*
