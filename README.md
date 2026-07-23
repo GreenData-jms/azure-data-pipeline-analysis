@@ -1,25 +1,40 @@
 # Azure Data Pipeline Analysis — ERC EDW Ingress
 
-Analysis and proposal for the **Azure data-ingress, cleanse, and staging tier** that feeds the Caltrans **Equipment Reporting Center (ERC) Enterprise Data Warehouse** (Oracle Autonomous Data Warehouse on OCI). This repo is the single source of truth for the analysis and the **connection point for Claude design** to generate downstream deliverables (TL;DRs, executive summaries, analysis pillars, presentations).
+Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds the Caltrans **Equipment Reporting Center (ERC) Enterprise Data Warehouse** (Oracle Autonomous Data Warehouse on OCI). Single source of truth for the analysis and the **connection point for Claude design** to generate downstream deliverables (TL;DRs, executive summaries, analysis pillars, presentations).
 
-> **In one line:** Azure ingests ~30 sources across three lanes, cleans them, ETLs them into the structures the ERC logical model expects, and lands the finished tables into the OCI EDW Bronze zone — where Billow/aiWorks promotes them to Silver/Gold. This repo evaluates **four ways to build that tier** and prices them on **live Azure retail rates**.
+> **In one line:** ingest ~30 sources across three lanes, clean them, ETL them into the structures the ERC logical model expects, and land the finished tables into the OCI EDW Bronze zone — where Billow/aiWorks promotes them to Silver/Gold. This repo evaluates **seven ways to build that tier** and prices each with **license and infrastructure as distinct cost items**.
 
 ---
 
-## The headline finding
+## The seven approaches (three families)
 
-At the documented mid-size workload, the three managed platforms run within a **narrow cost band (~$1,500–$2,700/mo)** — so run cost is *not* the differentiator; build effort, operations, and fit are. **Roll-your-own is the cheapest to run (~$1,032/mo) but the most expensive to own (~$388k over 3 years, ~2.4× ADF)** once build and ongoing maintenance labor are counted.
+| # | Approach | Family | 3-yr TCO |
+|---|---|---|---|
+| 1 | **ADF** | Azure managed | **$158,994** |
+| 3 | **Fabric** | Azure managed | $203,106 |
+| 2 | **Databricks** | Azure managed | $231,072 |
+| 5 | **Oracle OCI-native** | OCI (single-cloud) | $255,900 *(BYOL $232,716)* |
+| 4 | **Roll-your-own** | Azure DIY | $388,152 |
+| 6 | **On-prem Oracle DB (SE2)** | On-premise | $505,580 *(EE $762,856)* |
+| 7 | **On-prem SQL Server (Std)** | On-premise | $505,971 *(Ent $662,487)* |
 
-**Recommendation:** build on **ADF** (lowest ops, most mature Oracle sink), graduate heavy/streaming workstreams to **Databricks** without re-platforming, and validate **Fabric** via a scoped PoC.
+*Cloud: live Azure Retail (West US, 2026-07-22) + published OCI list. License list prices 2026. Planning estimates; enterprise discounts & reservations not applied. Model: `alternates/seven_approach_cost_model.py`.*
 
-| Option | Run $/mo | + Ops labor | Run+Ops $/mo | Build | 3-yr TCO |
-|---|---|---|---|---|---|
-| **A — ADF** | $1,654 | $1,200 | **$2,854** | ~$56k | **~$159k** |
-| **B — Databricks** | $1,728 | $2,400 | $4,128 | ~$83k | ~$231k |
-| **C — Fabric (F16)** | $2,670 | $1,200 | $3,870 | ~$64k | ~$203k |
-| **D — Roll-your-own** | **$1,032** | $6,000 | $7,032 | ~$135k | **~$388k** |
+## License vs Infrastructure vs Labor — the requested split
 
-*Live Azure Retail Prices, West US, PAYG, pulled 2026-07-22. Planning estimates; see `model/`.*
+| Approach | License 3yr | Infra 3yr | Labor 3yr | License % |
+|---|---|---|---|---|
+| 1. ADF | $26,964 | $32,580 | $99,450 | 17% |
+| 2. Databricks | $19,512 | $42,660 | $168,900 | 8% |
+| 3. Fabric | $84,096 | $12,060 | $106,950 | 41% |
+| 4. Roll-your-own | $7,128 | $30,024 | $351,000 | 2% |
+| 5. OCI-native (Lic-Incl) | $114,300 | $35,100 | $106,500 | 45% |
+| 6. On-prem Oracle SE2 | $58,112 | $210,468 | $237,000 | 11% |
+| 7. On-prem SQL Server Std | $66,003 | $210,468 | $229,500 | 13% |
+
+**What it reveals:** license is an explicit SKU off-cloud but bundled into hyperscaler rates (Fabric ≈ all license; roll-your-own trades license for labor). On-prem cost is dominated by hardware + labor, not license — *unless* Oracle Enterprise Edition, whose license alone (~$315k/3yr) exceeds the entire ADF TCO.
+
+**Recommendation (unchanged, now with 7 analyses behind it):** build on **ADF** — lowest total cost and lowest labor risk. **OCI-native** is the strongest non-Azure option (data gravity + zero cross-cloud egress, especially BYOL). **On-premise** is justified only by a residency/sovereignty mandate or existing on-prem investment.
 
 ---
 
@@ -27,18 +42,25 @@ At the documented mid-size workload, the three managed platforms run within a **
 
 ```
 .
-├── README.md                        ← you are here (overview + index)
+├── README.md                        ← overview + index + Claude design connection guide
 ├── DELIVERABLES.md                  ← spec for the analysis deliverables to build in Claude design
-├── CHANGELOG.md                     ← version history (v0.1 → v0.3 → corpus)
+├── CHANGELOG.md                     ← version history (v0.1 → v0.3 → corpus → alternates)
 ├── corpus/
-│   ├── content-corpus.md            ← FEED-READY content source of truth (facts, pillars, blocks, slides)
-│   └── figures.json                 ← machine-readable numbers (unit prices, per-variant run/ops/build/TCO)
+│   ├── content-corpus.md            ← FEED-READY content source of truth (the 4 Azure options)
+│   └── figures.json                 ← machine-readable numbers (Azure options)
+├── alternates/                      ← the 2 additional strategies + the full 7-approach view
+│   ├── alternate-1-oci-native.md    ← Oracle OCI-native ingress + in-database ETL
+│   ├── alternate-2-on-premise.md    ← on-prem stack (SQL Server or Oracle DB); license vs hardware
+│   ├── README.md                    ← full 7-approach comparison with license/infra split
+│   ├── seven_approach_cost_model.py ← reproducible 7-approach model (license/infra/labor)
+│   ├── seven-approach-figures.json  ← machine-readable 7-approach figures
+│   └── content-corpus-addendum.md   ← feed-ready content for the 2 new approaches + 7-way view
 ├── proposals/
-│   ├── proposal-v0.1.md             ← architecture, 3-lane ingress, DQ framework, OCI landing patterns
-│   ├── proposal-v0.2.md             ← three peer pipelines (ADF/Databricks/Fabric) + live-priced cost model
-│   └── proposal-v0.3.md             ← Variant D (roll-your-own) + ops-labor TCO lens + verdict
+│   ├── proposal-v0.1.md             ← architecture, 3-lane ingress, DQ, OCI landing
+│   ├── proposal-v0.2.md             ← three Azure peer pipelines + live-priced cost model
+│   └── proposal-v0.3.md             ← roll-your-own + ops-labor verdict
 └── model/
-    ├── erc_azure_cost_model.py       ← reproducible bottoms-up cost model (edit assumptions, re-run)
+    ├── erc_azure_cost_model.py       ← Azure-only bottoms-up model (approaches 1–4)
     └── README.md                     ← how to run and reprice
 ```
 
@@ -46,24 +68,23 @@ At the documented mid-size workload, the three managed platforms run within a **
 
 ## How to connect this repo from Claude design
 
-The repo is structured so Claude design can pull the right layer for whatever you're building:
+1. **Content:** `corpus/content-corpus.md` (Azure options) + `alternates/content-corpus-addendum.md` (OCI-native, on-prem, 7-way).
+2. **Numbers:** `corpus/figures.json` + `alternates/seven-approach-figures.json` (includes the license/infra split).
+3. **Targets:** `DELIVERABLES.md` defines each deliverable's audience, format, and source sections.
+4. **Depth / reprice:** `proposals/` + `model/` + `alternates/seven_approach_cost_model.py`.
 
-1. **Point at `corpus/content-corpus.md` + `corpus/figures.json`** — these are the feed-ready inputs. The corpus §0 has copy-paste prompt patterns for each output type; the JSON keeps every figure consistent.
-2. **Read `DELIVERABLES.md`** to pick which deliverable to generate — it defines each one's audience, format, source sections, and status.
-3. **Cite from `proposals/` and `model/`** when you need the full technical detail or want to re-run the numbers.
-
-Rule of thumb: **corpus for content, figures.json for numbers, proposals for depth, DELIVERABLES.md for the target.**
+Rule of thumb: **corpus + addendum for content, the two figures.json for numbers, proposals/alternates for depth, DELIVERABLES.md for the target.**
 
 ---
 
-## What Azure is (and isn't) here
+## What this tier is (and isn't)
 
-Azure is an **ingest → cleanse → ETL → stage tier in front of** the Oracle EDW — not a competing warehouse. It delivers clean, conformed `*_RAW` + `{TYPE}_STG` + `QUAR_` tables (ERC Naming Standards v3.0) to the OCI Bronze landing zone via one of three patterns (direct JDBC sink · Object Storage + `DBMS_CLOUD` external tables · GoldenGate/Data Pump CDC). Billow/aiWorks owns everything after that line. Because the landing contract is identical across all four options, the platform choice is **reversible**.
+An **ingest → cleanse → ETL → stage** tier that lands clean, conformed `*_RAW` + `{TYPE}_STG` + `QUAR_` tables (ERC Naming Standards v3.0) into the OCI EDW Bronze zone; Billow/aiWorks owns everything after. The landing contract is identical across approaches, so the platform choice is **reversible** — except OCI-native, where ingestion runs *inside* the EDW's cloud and the landing step disappears entirely.
 
 ---
 
 ## Sources
 
-Consolidates the Whimsical "API & SSOR Data Ingress" board, the ERC Logical Data Model v1, and the ERC EDW Unified Logical Architecture v1. Cost model uses the Azure Retail Prices API (West US, PAYG, 2026-07-22).
+Whimsical "API & SSOR Data Ingress" board; ERC Logical Data Model v1; ERC EDW Unified Logical Architecture v1. Cloud costs from the Azure Retail Prices API; Oracle/Microsoft license figures from 2026 published list prices.
 
 *Maintained by John-Michael Scott (GreenData Ventures). All cost figures are planning estimates pending a PoC.*
