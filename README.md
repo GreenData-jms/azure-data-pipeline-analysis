@@ -6,6 +6,18 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 
 ---
 
+## ⭐ Start here
+
+| Alt | Strategy | Approaches | Best 3-yr TCO | Write-up |
+|---|---|---|---|---|
+| **0** | **Azure** — dedicated tier in front of the EDW | ADF · Databricks · Fabric · Roll-your-own | **$158,994** (ADF) | [`alternates/alternate-0-azure.md`](alternates/alternate-0-azure.md) |
+| **1** | **Oracle OCI-native** — API inbound + in-DB ETL | OCI-native | **$232,716** (BYOL) | [`alternates/alternate-1-oci-native.md`](alternates/alternate-1-oci-native.md) |
+| **2** | **On-premise** — owned stack, ships to OCI | Oracle DB · SQL Server | **$505,580** | [`alternates/alternate-2-on-premise.md`](alternates/alternate-2-on-premise.md) |
+
+**Recommendation: build on ADF (alt 0).** One-glance map of all seven approaches → [`alternates/INDEX.md`](alternates/INDEX.md). Connecting Claude design? Jump to [How to connect](#how-to-connect-this-repo-from-claude-design).
+
+---
+
 ## The seven approaches (three families / three alternate write-ups)
 
 | Alt | # | Approach | Family | 3-yr TCO |
@@ -49,6 +61,7 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 │   ├── content-corpus.md            ← FEED-READY content source of truth (the 4 Azure options)
 │   └── figures.json                 ← machine-readable numbers (Azure options)
 ├── alternates/                      ← three parallel strategy write-ups + the full 7-approach view
+│   ├── INDEX.md                     ← one-glance alternate → approaches → TCO map (start here)
 │   ├── alternate-0-azure.md         ← Azure family (approaches 1–4): ADF/Databricks/Fabric/Roll-your-own
 │   ├── alternate-1-oci-native.md    ← Oracle OCI-native ingress + in-database ETL
 │   ├── alternate-2-on-premise.md    ← on-prem stack (SQL Server or Oracle DB); license vs hardware
