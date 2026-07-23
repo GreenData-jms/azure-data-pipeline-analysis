@@ -10,6 +10,7 @@ This folder holds the three parallel strategy write-ups and re-costs **all seven
 **Supporting files**
 - `seven_approach_cost_model.py` — reproducible model; license/infra/labor, capex + monthly, 3-yr TCO
 - `seven-approach-figures.json` — machine-readable figures for Claude design
+- `ASSUMPTIONS.md` — **off-Azure basis:** OCI-native + on-premise sizing, unit prices, worked build-ups, and the license breakdown (companion to `../model/ASSUMPTIONS.md` for the Azure variants)
 - `content-corpus-addendum.md` — feed-ready content for the alternates + the 7-way view
 
 ---
@@ -68,7 +69,7 @@ This folder holds the three parallel strategy write-ups and re-costs **all seven
 
 4. **Roll-your-own converts license into payroll.** Lowest license (2%), highest labor (90%). You stop paying Microsoft/Oracle for software and start paying engineers to build and forever maintain it.
 
-5. **OCI-native's data gravity is its real edge.** Its License-Included headline looks expensive, but **BYOL** (you almost certainly already own Oracle licenses for the EDW) plus **zero cross-cloud egress** and **no separate platform** make it the most architecturally coherent non-Azure option (~$233k BYOL).
+5. **OCI-native's data gravity is its real edge.** Its License-Included headline looks expensive, but **BYOL** (you almost certainly already own Oracle licenses for the EDW) plus **zero cross-cloud egress** and **no separate platform** make it the most architecturally coherent non-Azure option (~$233k BYOL). Full basis in `ASSUMPTIONS.md`.
 
 ---
 
@@ -83,6 +84,6 @@ This folder holds the three parallel strategy write-ups and re-costs **all seven
 **Recommendation stands: build on ADF** (alternate 0) — at the **low edge of the managed band** with the lightest build and lowest labor-risk. The two off-Azure alternates sharpen, rather than change, that conclusion:
 - **OCI-native (alt 1)** is closer than the headline implies (BYOL ~$233k, ~$30k above ADF and level with Fabric) and is the option to take seriously **if the program prioritizes single-vendor/single-cloud coherence and data gravity**. Prefer Azure over it on **workload isolation** (don't run ETL on the ADW that serves reporting) + connector breadth — *not* on TCO. It is the strongest non-Azure choice.
 - **On-premise (alt 2)** is justified **only by a hard data-residency/sovereignty mandate or a large existing on-prem investment to amortize** — it is ~3× the cost of ADF and concentrates hardware + operational risk on the team.
-- The **license/infrastructure split** is now a permanent lens in the model: change a license tier (SE2↔EE, Std↔Ent, Lic-Incl↔BYOL) or a hardware/facilities assumption and re-run to see each lever move independently.
+- The **license/infrastructure split** is now a permanent lens in the model: change a license tier (SE2↔EE, Std↔Ent, Lic-Incl↔BYOL) or a hardware/facilities assumption and re-run to see each lever move independently. Full off-Azure basis: `ASSUMPTIONS.md`.
 
 *Reproduce or reprice: `python3 seven_approach_cost_model.py`. All figures are planning estimates; enterprise license discounts (50–80% off list) and reservations are not applied — model both.*

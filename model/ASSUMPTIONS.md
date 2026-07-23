@@ -98,6 +98,8 @@ Blended rate **$150/hr** (state-adjustable; a two-rate senior/standard lever exi
 
 ## 7. Off-Azure sizing (for the 7-approach comparison)
 
+> **Full detail:** [`../alternates/ASSUMPTIONS.md`](../alternates/ASSUMPTIONS.md) — the OCI-native and on-premise basis with unit prices, sizing tables, worked build-ups, and the license breakdown. Summary below.
+
 **OCI-native (approach 5):** ~480 ETL OCPU-hours/mo on ADW; **2 OIC message packs** (~$1,886/mo); API Gateway ~$50, Functions ~$30, Object Storage ~$13; Lic-Incl carries an ADW OCPU software premium (~$1,289/mo = the $2.6847/OCPU-hr delta of Lic-Incl over BYOL); **zero cross-cloud egress; no GoldenGate.** BYOL drops ADW to the $1.3441/OCPU-hr rate.
 
 **On-premise (approaches 6 & 7):** 2× HA DB servers + SAN + network + backup = **~$120k capex**; monthly colo ~$1,200 + FastConnect to OCI ~$1,013 + maintenance ~$300; DBA+sysadmin **~30 h/mo**; database license per tier (Oracle SE2 ~$35k perpetual + 22%/yr support; SQL 2022 Standard 16-core + Windows Datacenter; EE/Enterprise variants far higher). ETL via PL/SQL or bundled SSIS (no separate ETL license modeled).
