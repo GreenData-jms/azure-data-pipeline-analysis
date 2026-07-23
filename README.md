@@ -6,19 +6,19 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 
 ---
 
-## The seven approaches (three families)
+## The seven approaches (three families / three alternate write-ups)
 
-| # | Approach | Family | 3-yr TCO |
-|---|---|---|---|
-| 1 | **ADF** | Azure managed | **$158,994** |
-| 3 | **Fabric** | Azure managed | $203,106 |
-| 2 | **Databricks** | Azure managed | $231,072 |
-| 5 | **Oracle OCI-native** | OCI (single-cloud) | $255,900 *(BYOL $232,716)* |
-| 4 | **Roll-your-own** | Azure DIY | $388,152 |
-| 6 | **On-prem Oracle DB (SE2)** | On-premise | $505,580 *(EE $762,856)* |
-| 7 | **On-prem SQL Server (Std)** | On-premise | $505,971 *(Ent $662,487)* |
+| Alt | # | Approach | Family | 3-yr TCO |
+|---|---|---|---|---|
+| 0 | 1 | **ADF** | Azure managed | **$158,994** |
+| 0 | 3 | **Fabric** | Azure managed | $203,106 |
+| 0 | 2 | **Databricks** | Azure managed | $231,072 |
+| 1 | 5 | **Oracle OCI-native** | OCI (single-cloud) | $255,900 *(BYOL $232,716)* |
+| 0 | 4 | **Roll-your-own** | Azure DIY | $388,152 |
+| 2 | 6 | **On-prem Oracle DB (SE2)** | On-premise | $505,580 *(EE $762,856)* |
+| 2 | 7 | **On-prem SQL Server (Std)** | On-premise | $505,971 *(Ent $662,487)* |
 
-*Cloud: live Azure Retail (West US, 2026-07-22) + published OCI list. License list prices 2026. Planning estimates; enterprise discounts & reservations not applied. Model: `alternates/seven_approach_cost_model.py`.*
+*Alternate 0 = the Azure family (approaches 1–4); alternate 1 = Oracle OCI-native; alternate 2 = on-premise. Cloud: live Azure Retail (West US, 2026-07-22) + published OCI list. License list prices 2026. Planning estimates; enterprise discounts & reservations not applied. Model: `alternates/seven_approach_cost_model.py`.*
 
 ## License vs Infrastructure vs Labor — the requested split
 
@@ -48,7 +48,8 @@ Analysis and proposal for the data-ingress, cleanse, and staging tier that feeds
 ├── corpus/
 │   ├── content-corpus.md            ← FEED-READY content source of truth (the 4 Azure options)
 │   └── figures.json                 ← machine-readable numbers (Azure options)
-├── alternates/                      ← the 2 additional strategies + the full 7-approach view
+├── alternates/                      ← three parallel strategy write-ups + the full 7-approach view
+│   ├── alternate-0-azure.md         ← Azure family (approaches 1–4): ADF/Databricks/Fabric/Roll-your-own
 │   ├── alternate-1-oci-native.md    ← Oracle OCI-native ingress + in-database ETL
 │   ├── alternate-2-on-premise.md    ← on-prem stack (SQL Server or Oracle DB); license vs hardware
 │   ├── README.md                    ← full 7-approach comparison with license/infra split
