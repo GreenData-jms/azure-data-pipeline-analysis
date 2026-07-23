@@ -4,11 +4,13 @@
 
 **Palette used (swap for your brand):** deep navy `15213B`, navy `1E2761`, teal `1C7293`, ice `CADCFC`, amber accent `E8A33D`; family colors — Azure teal `1C7293`, OCI clay `C0603A`, on-prem slate `6B5B95`. Serif headers (Cambria), sans body (Calibri). Dark title/section/closing slides, light content (sandwich).
 
+> **Attribution note:** aiWorks is **Agiline Software's** aiWorks platform, which **Billow uses** (with Billow-provided PL/SQL) for the in-EDW load. It is **not** a Billow product.
+
 ---
 
 **1 · Title (dark).** Kicker: ERC ENTERPRISE DATA WAREHOUSE. Title: *Feeding the Warehouse.* Subtitle: *Seven ways to build the data-ingress tier — priced and compared.* Three family chips (Azure · 4 approaches / Oracle OCI-native / On-premise · 2 approaches). Accent line: *Recommendation: build on ADF — lowest total cost, lowest labor risk.* Footer: Caltrans Division of Equipment · GreenData Ventures · July 2026 · DRAFT.
 
-**2 · Positioning (light).** Title: *Azure sits in front of the Oracle EDW — not beside it.* Four-step flow: SOURCES (~30 feeds, 3 lanes) → INGEST·CLEANSE·ETL·STAGE (the tier this deck evaluates) → OCI EDW BRONZE (clean *_RAW / {TYPE}_STG lands here) → aiWORKS → SILVER·GOLD (Billow PL/SQL → Power BI). Callout: the contract line — reversible except OCI-native.
+**2 · Positioning (light).** Title: *Azure sits in front of the Oracle EDW — not beside it.* Four-step flow: SOURCES (~30 feeds, 3 lanes) → INGEST·CLEANSE·ETL·STAGE (the tier this deck evaluates) → OCI EDW BRONZE (clean *_RAW / {TYPE}_STG lands here) → BILLOW + aiWORKS → SILVER·GOLD (Agiline aiWorks platform + Billow-provided PL/SQL → Power BI). Callout: the contract line — reversible except OCI-native.
 
 **3 · Three lanes (light).** Title: *~30 sources, three connection profiles.* Three cards: Lane 1 External API (ChargePoint · Tesla · GeoTab · AssetWorks REST · NEE); Lane 2 Internal SSOR (FA + M5 · VHSP MySQL · Access · SmartSheets · XREF); Lane 3 Other-Dept / External CA (CGI Advantage · InfoAdvantage · FastTrak · CARB · US Bank · WEX · EJ Ward). Tagline: different reach, one clean-and-land pattern.
 
@@ -30,6 +32,6 @@
 
 **12 · Recommendation (dark, 4 cards).** Baseline: ADF. Graduate: Databricks (telematics/high-volume; incremental). Validate: Fabric (PoC; F8-reserved competitive if tuned). Only if mandated: On-premise (residency/sovereignty or sunk investment).
 
-**13 · Next step (light).** A 2–3 week two-feed PoC: GeoTab telematics (Lane 1) + FastTrak/CGI Advantage (Lane 3) → OCI Bronze with QUAR_/manifest hand-off to aiWorks. What it buys: committed numbers, validated contract, de-risked choice, parallel Fabric F-SKU trial.
+**13 · Next step (light).** A 2–3 week two-feed PoC: GeoTab telematics (Lane 1) + FastTrak/CGI Advantage (Lane 3) → OCI Bronze with QUAR_/manifest hand-off to Billow's aiWorks (Agiline) load. What it buys: committed numbers, validated contract, de-risked choice, parallel Fabric F-SKU trial.
 
 **14 · Basis & caveats (light).** Cost basis; key license prices; not applied (enterprise discounts 50–80%, reservations 30–41%); load-bearing assumptions; open risks. Reproduce: `alternates/seven_approach_cost_model.py`.
