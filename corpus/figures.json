@@ -6,6 +6,7 @@
     "region": "westus",
     "currency": "USD",
     "caveat": "Planning estimates on documented volume assumptions; not a quote. Build/ops use a $150/hr blended labor rate. Reservations (1-3yr) cut compute 30-41% and are not in the PAYG baseline.",
+    "scope_invariant": "Every approach lands in Oracle EDW staging; Power BI consumes the Oracle EDW downstream of Agiline's aiWorks, invariant across approaches. BI-platform 'nativeness' (Fabric/Power BI) is NOT a selection factor. Present the managed three (ADF/Fabric/Databricks) as a band ~$159k-$231k, not a ranking. See alternates/seven-approach-figures.json for the 7-approach view and GoldenGate/egress contingencies.",
     "as_of": "2026-07-22"
   },
   "unit_prices": {
